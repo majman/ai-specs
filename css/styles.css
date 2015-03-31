@@ -1,0 +1,304 @@
+/* reset */
+@import "reset.css";
+
+body {
+    font-family: "Lucida Grande";
+    font-size: 12px;
+    margin: 0;
+    padding: 10px;
+    /*background: #d6d6d6;*/
+    border: none;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+    text-shadow: inherit;
+}
+.clearfix:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+#container{
+    padding: 10px;
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.3) inset;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 15px;
+    background-color: inherit;
+    max-width: 300px;
+}
+.form-output {
+    position: absolute;
+    bottom: 0;
+    padding: 0 0 0 5px;
+}
+
+button,
+.btn-group {
+    font-family:inherit;
+    color:inherit;
+    font-size:inherit;
+
+    display: inline-block;
+    margin: 0 5px 5px 0;
+    padding: 0 8px;
+    height: 26px;
+    line-height: 24px;
+    -webkit-border-radius: 2px;
+    border: none;
+    vertical-align: top;
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eaeaea));*/
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.5) inset,
+        0 1px rgba(255,255,255, .15);
+}
+.btn-group {
+    padding: 1px 1px 2px;
+}
+.btn-group a {
+    padding: 0 2px;
+    box-shadow: 1px 0 rgba(0, 0, 0, .2), -1px 0 rgba(255, 255, 255, .7) inset;
+}
+.btn-group a:last-of-type {
+    box-shadow: none;
+}
+.button.icon {
+    padding-left: 4px;
+}
+.section {
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    -webkit-box-shadow: 0 1px rgba(255, 255, 255, .4), 0 -1px rgba(0, 0, 0, .27) inset;
+}
+.label {
+    line-height: 20px;
+}
+fieldset {
+    position: relative;
+    border: none;
+    margin: 0 0 5px;
+    -webkit-box-shadow: 0 1px rgba(0, 0, 0, .27) inset,
+        0 2px rgba(255, 255, 255, .1) inset,
+        0 1px rgba(255, 255, 255, .1);
+    padding: 10px 10px 5px;
+    background-color: inherit;
+}
+legend {
+    font-weight: bold;
+    background-color: inherit;
+    position: relative;
+    padding: 2px 5px;
+    z-index: 100;
+}
+.form-group {
+    width: 50%;
+    float: left;
+}
+.form-input{
+    padding: 2px;
+}
+.form-input label {
+    width: 65px;
+    display: inline-block;
+    text-align: right;
+    vertical-align: middle;
+}
+.input-empty{
+    opacity: .5;
+}
+input[type="text"] {
+    /*background: #ffffff;*/
+    font-family:inherit;
+    font-size: inherit;
+    outline: 0;
+    border: 0;
+    line-height: 15px;
+    padding: 1px 3px 0;
+    -webkit-border-radius: 1px;
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.75) inset;
+    color: inherit;
+    width: 40px;
+    cursor: text;
+    margin: 0;
+    vertical-align: middle;
+}
+select{
+    height: 16px;
+    line-height: 16px;
+    display: inline-block;
+    padding: 0 15px 0 5px;
+    margin: 0;
+    -webkit-border-radius: 3px;
+    background: url(select-arrows.png) no-repeat 90% 50%,
+        -webkit-gradient(linear, left top, left bottom, from(white), to(#EAEAEA));
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.6) inset,
+        0 1px rgba(255,255,255, .55);
+    outline: none;
+    border: none;
+    -webkit-appearance: none;
+}
+option, optgroup {
+    -webkit-appearance: none;
+    background-color: white;
+    color: black;
+}
+.icon{
+    position: relative;
+    min-width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.icon-button {
+    -webkit-border-radius: 2px;
+}
+
+.icon:before{
+    content: '';
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    display:inline-block;
+    vertical-align: top;
+    background: url(icons.png) no-repeat 3px 4px;
+}
+.icon-grid:before{
+    background-position: -17px 4px;
+}
+.icon-layers:before{
+    background-position: 3px -16px;
+}
+.icon-folder:before{
+    background-position: -17px -16px;
+}
+.icon-spacing:before{
+    background-position: -17px -38px;
+}
+.icon-path:before{
+    background: url(path-icons.png) no-repeat 3px 4px;
+}
+#path-subtract:before{
+    background-position: 3px -16px;
+}
+#path-intersect:before{
+    background-position: 3px -36px;
+}
+#path-exclude:before{
+    background-position: 3px -56px;
+}
+
+label.icon{
+    height: 16px;
+}
+
+
+/* range input */
+input[type='range']{
+    background: rgba(0,0,0,.3);
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 0 0 1px rgba(0,0,0,.2) inset, 0 1px 2px rgba(0,0,0,.2) inset;
+    height: 5px;
+    -webkit-border-radius: 3px;
+}
+input[type='range']::-webkit-slider-thumb{
+    background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#e1e1e1));
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 1px 3px rgba(0,0,0,.3);
+    height:8px;
+    width:8px;
+    -webkit-border-radius: 4px;
+}
+
+/* collapsible blocks */
+.collapsible{
+    overflow: hidden;
+    max-height: 1000px;
+    position: relative;
+    background: #eee;
+}
+.collapsible.hidden{
+    max-height: 0;
+    background: #aaa;
+}
+.collapsible .close{
+    position: absolute;
+    top: 0;
+    right: 0;
+
+}
+
+/* tab groups */
+.nav-tabs{
+    -webkit-box-shadow: 0 -1px rgba(0,0,0,.4) inset,
+        0 -1px rgba(0,0,0,.4),
+        0 1px rgba(255,255,255, .25) inset;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,.3)), to(rgba(0,0,0,.4)));
+}
+.nav-tabs li{
+    font-weight: bold;
+    float:left;
+    padding: 0 8px;
+    height: 20px;
+    line-height: 20px;
+
+    vertical-align: top;
+    text-shadow: 0 1px rgba(255,255,255, .25);
+    -webkit-box-shadow: 1px 0 rgba(0,0,0,.4);
+
+}
+.nav-tabs li.active {
+    background: #d6d6d6;
+    -webkit-box-shadow: 1px 0 rgba(0,0,0,.4) inset,
+        -1px 0 rgba(0,0,0,.4) inset,
+        0 1px rgba(255,255,255, .55) inset;
+}
+
+.tab-pane {
+    padding: 10px;
+    display: none;
+}
+.tab-pane.active{
+    display: block;
+}
+
+
+.test-stuff {
+    position: absolute;
+    bottom: 0;
+}
+
+
+.icon-button:before  {
+    width: 16px;
+    height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.vert.icon-button:before {
+    vertical-align: text-top;
+}
+.both.button:before {
+    content: url(../images/both-dark.png);
+
+}
+.horz.button:before {
+    content: url(../images/horz-dark.png);
+
+}
+.vert.button:before {
+    content: url(../images/vert-dark.png);
+}
+
+.light-ui .both.button:before {
+    content: url(../images/both-light.png);
+
+}
+.light-ui .horz.button:before {
+    content: url(../images/horz-light.png);
+
+}
+.light-ui .vert.button:before {
+    content: url(../images/vert-light.png);
+}
