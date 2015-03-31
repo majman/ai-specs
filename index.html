@@ -1,24 +1,70 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-
-<!-- <link id="hostStyle" rel="stylesheet" href="css/theme.css"/> -->
-<!-- <link rel="stylesheet" href="css/topcoat-desktop-dark.min.css"/> -->
-<link id="mainStyle" rel="stylesheet" href="css/styles.css"/>
-
-<title></title>
+    <meta charset="utf-8">
+    <link id="mainStyle" rel="stylesheet" href="css/styles.css"/>
+    <title></title>
 </head>
 
 <body>
     <div id="content">
-        <div id="main" class="">
+        <div id="main">
+
+            <div class="content-row section">
+                <div class="button-group columns">
+                    <button id="auto_spec" class="both icon-button button">both</button>
+                    <button id="horz_spec" class="horz icon-button button">horz</button>
+                    <button id="vert_spec" class="vert icon-button button">vert</button>
+                    <button id="spaceBetweenSpec" class="icon-button button">space between</button>
+                </div>
+                <div class="form-input checkbox-input" >
+                    <label>
+                        <input name="colorSpec" id="colorSpec" class="form-val" type="checkbox">
+                        <span class="checkbox-label">add color &amp; opacity</span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="form-inputs" class="columns section">
+
+                <div class="form-group column">
+                    <div class="form-input" >
+                        <label>units</label>
+                        <input name="units" id="units" class="form-val str-val" type="text" value="dp">
+                    </div>
+                    <div class="form-input" >
+                        <label>font units</label>
+                        <input name="fontUnits" id="fontUnits" class="form-val str-val" type="text" value="pt">
+                    </div>
+                    <div class="form-input" >
+                        <label>spacing</label>
+                        <input name="spacing" id="objectPadding" class="form-val num-val" type="text" value="10">
+                    </div>
+                    <div class="form-input" >
+                        <label>base unit</label>
+                        <input name="unitBase" id="unitBase" class="form-val num-val" type="text" value="3">
+                    </div>
+                </div>
+
+                <div class="form-group column">
+
+                    <div class="">
+                        <button id="specAllText" class="button">spec all text</button>
+                        <div class="info">all visible / unlocked text</div>
+                    </div>
+
+                    <div class="form-input checkbox-input border-top" >
+                        <label>
+                            <input name="guessBase" id="guessBase" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">guess base unit from artboard width</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
 
 
 
-
-
-            <div id="mainPanel" class="panel">
+            <div class="output-panel ">
                 <div id="output">
 
                 </div>
@@ -27,13 +73,18 @@
                 </div>
 
             </div>
-            <div class="test-stuff">
-                <button id="btn_reload" class="button">Reload</button>
 
+            <div class="test-stuff section">
+
+                <button id="btn_reload" class="button">Reload</button>
+                <button id="colors_spec" class="button">All Colors</button>
+                <button id="testFunction" class="button">test</button>
             </div>
 
-
         </div>
+
+
+
 
 
     </div>

@@ -1,9 +1,11 @@
 function ColorInfo(options){
-    // updateArtboardInfo();
+    updateArtboardInfo();
     // var ab = actArtboard;
     // var artboardInfo = new ArtboardInfo(actArtboard);
 
     getSpecLayer()
+
+
 
     var swatches = actDoc.swatchGroups[actDoc.swatchGroups.length - 1].getAllSwatches();
 
@@ -11,18 +13,24 @@ function ColorInfo(options){
     swatchGroup.name = 'Colors';
     var swatchSize = specSize * 2.5 >> 0;
 
+    var s
     for(var i = 0, len = swatches.length; i < len; i++){
-        var s = swatches[i];
+        s = swatches[i];
 
         var x = artboardLeft + artboardWidth + swatchSize * 3;
         var y = artboardTop - (i * (swatchSize + specOptions.objectPadding *2));
+
         var rectRef = swatchGroup.pathItems.rectangle(y, x, swatchSize, swatchSize);
         var rgbColor = s.color;
         rectRef.fillColor = rgbColor;
 
 
         var textRef = swatchGroup.textFrames.add();
-        var hex = rgbToHex(rgbColor.red, rgbColor.green, rgbColor.blue);
+        var hex = '';
+        if(s.color.typename == 'RGBColor'){
+            hex = rgbToHex(rgbColor.red, rgbColor.green, rgbColor.blue);
+        }
+
 
         var cName = '';
         if(s.name.indexOf('R=') == -1){
@@ -40,8 +48,13 @@ function ColorInfo(options){
 
         textRef.left = x + swatchSize + specOptions.objectPadding;
         textRef.top = y;
-
+        //  try {
+        // } catch(e){
+        //     alert(s.color.spot.color+' '+e);
+        //     break;
+        // }
     }
+
 
     return this;
 }

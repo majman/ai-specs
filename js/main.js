@@ -4,19 +4,15 @@
 (function () {
 
 
-    var csInterface = new CSInterface();
+    var csInterface;
     var message = '';
-
-    // Opens the chrome developer tools in host app
-    function showDevTools() {
-        window.__adobe_cep__.showDevTools();
-    }
+    var eventScope = "GLOBAL";
+    var eventType;
 
     // Reloads extension panel
     function reloadPanel() {
         location.reload();
     }
-
     $('#btn_reload').on('click', reloadPanel)
 
     // Loads / executes a jsx file
@@ -25,30 +21,18 @@
         csInterface.evalScript('$._ext.evalFile("' + scriptPath + '")');
     }
 
-    // Loads / executes all jsx files in the given folder
-    function loadJSXFiles(pFolderPath) {
-        var extensionRoot = csInterface.getSystemPath(SystemPath.EXTENSION) + pFolderPath;
-        csInterface.evalScript('$._ext.evalFiles("' + extensionRoot + '")');
-    }
+    function init() {
+        csInterface = new CSInterface();
 
 
-    csInterface.addEventListener("My Custom Event", function(evt) {
-
+        csInterface.addEventListener("My Custom Event", function(evt) {
             var m = $("#output").text();
             message = m + evt.data + "\n\n";
             $("#output").text(message);
-
-    });
-
-    var eventScope = "GLOBAL";
-    var eventType;
-
-
-
-    function init() {
+        });
         themeManager.init();
 
-        loadJSXFile("/jsx/library.js")
+        loadJSXFile("/jsx/measurements.js")
 
         function getOptions(){
             var options = {};
@@ -61,6 +45,14 @@
                     var v;
                     if($this.hasClass('num-val')){
                         v = $this.val().replace(/[^0-9.]/g, "");
+                    }else if($this.attr('type') == "checkbox"){
+
+                        if($this.is(':checked') == true){
+                            v = true;
+                        }else {
+                            v = false;
+                        }
+
                     }else {
                         v = $this.val();
                     }
@@ -71,11 +63,56 @@
             // $("#output").text(message);
             return options;
         }
+        $('#auto_spec').on('click', function(){
 
-        csInterface.evalScript("$.getScripts()");
+            var o = getOptions();
+            var stringified = $.stringify(o);
 
+            csInterface.evalScript("$.spec("+stringified+")");
+        });
+        $('#horz_spec').on('click', function(){
 
+            var o = getOptions();
+            var stringified = $.stringify(o);
 
+            csInterface.evalScript("$.specHorz("+stringified+")");
+        });
+        $('#vert_spec').on('click', function(){
+
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specVert("+stringified+")");
+        });
+
+        $('#colors_spec').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specColors("+stringified+")");
+        });
+
+        $('#spaceBetweenSpec').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.spaceBetweenSpec("+stringified+")");
+        });
+
+        $('#test_spec').on('click', function(){
+            csInterface.evalScript("$.testAlert2()", function (res) {
+
+            });
+        });
+
+        $('#specAllText').on('click', function(){
+            // var o = getOptions();
+            // var stringified = $.stringify(o);
+            csInterface.evalScript("$.specAllText()");
+        });
+
+        $('#testFunction').on('click', function(){
+            // var o = getOptions();
+            // var stringified = $.stringify(o);
+            csInterface.evalScript("$.testFunction()");
+        });
 
 
     }
