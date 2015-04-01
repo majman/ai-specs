@@ -4,10 +4,8 @@
 (function () {
 
 
-    var csInterface;
+    var csInterface = new CSInterface();
     var message = '';
-    var eventScope = "GLOBAL";
-    var eventType;
 
     // Reloads extension panel
     function reloadPanel() {
@@ -21,14 +19,24 @@
         csInterface.evalScript('$._ext.evalFile("' + scriptPath + '")');
     }
 
+    function addMessage(str){
+        $("#output").text(str);
+    }
+    function appendMessage(str){
+        var m = $("#output").html();
+        $("#output").text(m + "\n" + str);
+    }
+
     function init() {
-        csInterface = new CSInterface();
-
-
-        csInterface.addEventListener("My Custom Event", function(evt) {
-            var m = $("#output").text();
-            message = m + evt.data + "\n\n";
-            $("#output").text(message);
+        csInterface.addEventListener("My Custom Event", function(e) {
+            var dataType = typeof(e.data);
+            var str;
+            if(dataType == "object"){
+                str = JSON.stringify(e.data);
+            }else {
+                str = e.data;
+            }
+            appendMessage(str)
         });
         themeManager.init();
 
@@ -41,49 +49,46 @@
 
             $('.form-val').each(function(i){
                 $this = $(this);
-                if(!$this.hasClass('input-empty')){
-                    var v;
-                    if($this.hasClass('num-val')){
-                        v = $this.val().replace(/[^0-9.]/g, "");
-                    }else if($this.attr('type') == "checkbox"){
 
-                        if($this.is(':checked') == true){
-                            v = true;
-                        }else {
-                            v = false;
-                        }
+                var key = $this.attr('id');
+                var val;
+                if($this.hasClass('num-val')){
+                    val = $this.val().replace(/[^0-9.]/g, "");
+                }else if($this.attr('type') == "checkbox"){
 
+                    if($this.is(':checked') == true){
+                        val = true;
                     }else {
-                        v = $this.val();
+                        val = false;
                     }
-                    options[$this.attr('id')] = v;
-                    message +=  $this.attr('id') + " = "+ v + "; ";
+
+                }else {
+                    val = $this.val();
                 }
+                options[key] = val;
+
+                message +=  key + " = "+ val + "; \n\r";
+
             });
-            // $("#output").text(message);
+
+            addMessage(message);
             return options;
         }
         $('#auto_spec').on('click', function(){
-
             var o = getOptions();
             var stringified = $.stringify(o);
-
             csInterface.evalScript("$.spec("+stringified+")");
         });
         $('#horz_spec').on('click', function(){
-
             var o = getOptions();
             var stringified = $.stringify(o);
-
             csInterface.evalScript("$.specHorz("+stringified+")");
         });
         $('#vert_spec').on('click', function(){
-
             var o = getOptions();
             var stringified = $.stringify(o);
             csInterface.evalScript("$.specVert("+stringified+")");
         });
-
         $('#colors_spec').on('click', function(){
             var o = getOptions();
             var stringified = $.stringify(o);
@@ -96,33 +101,26 @@
             csInterface.evalScript("$.spaceBetweenSpec("+stringified+")");
         });
 
-        $('#test_spec').on('click', function(){
-            csInterface.evalScript("$.testAlert2()", function (res) {
-
-            });
-        });
-
         $('#specAllText').on('click', function(){
-            // var o = getOptions();
-            // var stringified = $.stringify(o);
-            csInterface.evalScript("$.specAllText()");
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specAllText("+stringified+")");
         });
 
         $('#testFunction').on('click', function(){
             // var o = getOptions();
             // var stringified = $.stringify(o);
-            csInterface.evalScript("$.testFunction()");
+            // csInterface.evalScript("$.testFunction()");
+            var o = getOptions();
+            addMessage($.stringify(o));
         });
-
-
     }
-
     init();
-
 }());
 
+
 jQuery.extend({
-    stringify  : function stringify(obj) {
+    stringify : function stringify(obj) {
         if ("JSON" in window) {
             return JSON.stringify(obj);
         }

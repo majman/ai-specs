@@ -1,11 +1,6 @@
 function ColorInfo(options){
     updateArtboardInfo();
-    // var ab = actArtboard;
-    // var artboardInfo = new ArtboardInfo(actArtboard);
-
-    getSpecLayer()
-
-
+    getSpecLayer();
 
     var swatches = actDoc.swatchGroups[actDoc.swatchGroups.length - 1].getAllSwatches();
 
@@ -13,7 +8,7 @@ function ColorInfo(options){
     swatchGroup.name = 'Colors';
     var swatchSize = specSize * 2.5 >> 0;
 
-    var s
+    var s;
     for(var i = 0, len = swatches.length; i < len; i++){
         s = swatches[i];
 
@@ -48,11 +43,6 @@ function ColorInfo(options){
 
         textRef.left = x + swatchSize + specOptions.objectPadding;
         textRef.top = y;
-        //  try {
-        // } catch(e){
-        //     alert(s.color.spot.color+' '+e);
-        //     break;
-        // }
     }
 
 

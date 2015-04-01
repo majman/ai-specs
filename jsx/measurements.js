@@ -5,7 +5,6 @@
 var actDoc;
 var selectedObjects;
 
-
 var specColor = new RGBColor();
 specColor.red = 0;
 specColor.green = 255;
@@ -63,6 +62,7 @@ function addSpecItem(type, item){
 }
 
 function updateOptions(options){
+
     try{
         _.each(options, function(v, k){
             if(typeof(specOptions[k]) == "number"){
@@ -74,6 +74,7 @@ function updateOptions(options){
         if(options.guessBase == true){
             specOptions.unitBase = guessBaseUnits();
         }
+
     }catch(e){
         alert(e);
     }
@@ -94,9 +95,11 @@ function checkIfLockedOrHidden(el){
 
 var allTextStyles = [];
 
-function getAllTextStyles(){
+function getAllTextStyles(options){
     updateArtboardInfo();
     getSpecLayer();
+    updateOptions(options);
+
 
     allTextStyles = [];
     var atf = getAllTextFrames();
@@ -456,8 +459,8 @@ function updateArtboardInfo(){
 
 }
 
+// guess artboard base unit from width
 function guessBaseUnits(){
-    // guess page base unit
     var w = Math.round(artboardWidth);
     var bUnit = 1;
     // android
@@ -767,21 +770,6 @@ function addText(txt, p1, p2, diff, pos){
     return tf;
 }
 
-function getGeometricBounds(ob){
-
-    // left, top, right, bottom
-    var gb = ob.geometricBounds;
-    var c = findCenter(ob);
-    return {
-        left: gb[0],
-        top: gb[1],
-        right: gb[2],
-        bottom: gb[3],
-        center: c,
-        item: ob
-    }
-}
-
 
 // direction: "horz" | "vert"
 function Spec(direction, group){
@@ -909,43 +897,45 @@ function Spec(direction, group){
     return this;
 }
 
+// get colors based on Illustrator Color Type
 function getColorValues(color) {
-        if(color.typename) {
-            switch(color.typename) {
-                case "RGBColor":
-                    return  [Math.floor(color.red), Math.floor(color.green), Math.floor(color.blue)];
-                case "GrayColor":
-                    return [Math.floor(color.gray), Math.floor(color.gray), Math.floor(color.gray)];
-                case "SpotColor":
-                    return getColorValues(color.spot.color);
-            }
+    if(color.typename) {
+        switch(color.typename) {
+            case "RGBColor":
+                return  [Math.floor(color.red), Math.floor(color.green), Math.floor(color.blue)];
+            case "GrayColor":
+                return [Math.floor(color.gray), Math.floor(color.gray), Math.floor(color.gray)];
+            case "SpotColor":
+                return getColorValues(color.spot.color);
         }
+    }
     return "Non Standard Color Type";
 }
 
-function componentToHex(c) {
-    var hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-// alert( rgbToHex(0, 51, 255) ); // #0033ff
 
 
+// find center of geometric bounds [x,y]
 function findCenter(pi){
-    var gb = pi.geometricBounds; // left, top, right, bottom
+    var gb = pi.geometricBounds;  // [left, top, right, bottom]
     return [(gb[0] + gb[2]) / 2, (gb[1] + gb[3]) / 2];
 }
 
 
+function getGeometricBounds(ob){
+    var gb = ob.geometricBounds; // [left, top, right, bottom]
+    var c = findCenter(ob);
+    return {
+        left: gb[0],
+        top: gb[1],
+        right: gb[2],
+        bottom: gb[3],
+        center: c,
+        item: ob
+    }
+}
 
 
-
-
-
+// load xLib
 try {
     var xLib = new ExternalObject("lib:\PlugPlugExternalObject");
 } catch (e) {
@@ -961,16 +951,12 @@ function dispatchCEPEvent(_type, _data) {
     }
 }
 
-$.testAlert2 = function() {
-    selectionInfo = new SelectionInfo();
-    dispatchCEPEvent("My Custom Event", 'test alert');
-    return "[Return Message from evalScript() callback]";
-}
 
+// button functions
 $.spec = function(options) {
-
     selectionInfo = new SelectionInfo(null, options);
     dispatchCEPEvent("My Custom Event", 'both');
+
     return "complete";
 }
 
@@ -979,42 +965,54 @@ $.specHorz = function(options) {
     dispatchCEPEvent("My Custom Event", 'spec');
     return "complete";
 }
+
 $.specVert = function(options) {
     selectionInfo = new SelectionInfo('vert', options);
     dispatchCEPEvent("My Custom Event", 'spec');
     return "complete";
 }
 
-
 $.specColors = function(options) {
-
     colorInfo = new ColorInfo(options);
     dispatchCEPEvent("My Custom Event", 'colors');
     return "complete";
 }
 
-
-
 $.spaceBetweenSpec = function(options) {
-
     selectionInfo = new SelectionInfo('spaceBetween', options);
     dispatchCEPEvent("My Custom Event", 'spaceBetweenSpec');
     return "complete";
 }
 
-
-
 $.specAllText = function(options) {
-
-    getAllTextStyles();
+    getAllTextStyles(options);
     dispatchCEPEvent("My Custom Event", 'specAllText');
     return "complete";
 }
 
 $.testFunction = function(options) {
-
-    getAllTextStyles();
-    dispatchCEPEvent("My Custom Event", 'testFunction');
-    return "complete";
+    var val = {"a": "foo"};
+    dispatchCEPEvent("My Custom Event", stringify(val));
+    return o;
 }
 
+function stringify(obj) {
+    var t = typeof (obj);
+    if (t != "object" || obj === null) {
+        // simple data type
+        if (t == "string") obj = '"' + obj + '"';
+        return String(obj);
+    } else {
+        // recurse array or object
+        var n, v, json = [], arr = (obj && obj.constructor == Array);
+        for (n in obj) {
+            v = obj[n];
+            t = typeof(v);
+            if (obj.hasOwnProperty(n)) {
+                if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = jQuery.stringify(v);
+                json.push((arr ? "" : '"' + n + '":') + String(v));
+            }
+        }
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+    }
+}
