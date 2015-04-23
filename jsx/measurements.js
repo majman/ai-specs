@@ -1,6 +1,7 @@
 #include "underscore.js";
 #include "utils.js";
 #include "colorInfo.js";
+#include "artboard-bg.js";
 
 var actDoc;
 var selectedObjects;
@@ -987,6 +988,12 @@ $.spaceBetweenSpec = function(options) {
 $.specAllText = function(options) {
     getAllTextStyles(options);
     dispatchCEPEvent("My Custom Event", 'specAllText');
+    return "complete";
+}
+
+$.makeArtboardBackground = function(options) {
+    artboardBackground();
+    dispatchCEPEvent("My Custom Event", 'makeArtboardBackground');
     return "complete";
 }
 

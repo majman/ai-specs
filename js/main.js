@@ -106,6 +106,9 @@
             var stringified = $.stringify(o);
             csInterface.evalScript("$.specAllText("+stringified+")");
         });
+        $('#makeArtboardBackground').on('click', function(){
+            csInterface.evalScript("$.makeArtboardBackground()");
+        });
 
         $('#testFunction').on('click', function(){
             // var o = getOptions();
