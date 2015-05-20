@@ -1,6 +1,6 @@
 var doc = app.activeDocument;
 
-function artboardBackground(){
+function bigArtboardBackground(){
     var minArtboardX = 0;
     var maxArtboardX = 0;
     var minArtboardY = 0;
@@ -48,6 +48,48 @@ function artboardBackground(){
     bgLayer.locked = true;
     // alert('min: ('+minArtboardX+', '+minArtboardY+'); max: ('+maxArtboardX+', '+maxArtboardY+')');
 }
+
+function allArtboardBackgrounds(){
+
+    var padding = 0;
+
+    var bgLayer = createBackgroundLayer();
+    bgLayer.zOrder(ZOrderMethod.SENDTOBACK);
+
+    var fill = new RGBColor();
+    for (var abNumber = 0; abNumber < doc.artboards.length; abNumber++) {
+        // doc.artboards.setActiveArtboardIndex(abNumber);
+
+        var ab =  doc.artboards[abNumber];
+        var abRect =  ab.artboardRect;
+        var abX =  abRect[0];
+        var abY = abRect[1];
+        var abW =  Math.round(abRect[2] - abX);
+        var abH = abY - abRect[3];
+        var artboardAspectRatio =  abH/abW;
+
+        var rectRef = bgLayer.pathItems.rectangle(abY + padding, abX - padding, abW + padding * 2, abH + padding * 2);
+        rectRef.fillColor = fill;
+        rectRef.stroked = false;
+        rectRef.name = ab.name + ' Background';
+
+    }
+    // rectRef.selected = true;
+    // for(i=0;i<doc.artboards.length;i++){
+    //     var top=artboardRef[i].artboardRect[1];
+    //     var left=artboardRef[i].artboardRect[0];
+    //     var width=artboardRef[i].artboardRect[2]-artboardRef[i].artboardRect[0];
+    //     var height=artboardRef[i].artboardRect[1]-artboardRef[i].artboardRect[3];
+    //     var rect = docRef.pathItems.rectangle (top+bleedTop, left-bleedLeft, width+(+bleedLeft)+(+bleedRight), height+(+bleedTop)+(+bleedBottom));
+    //     rect.fillColor = rect.strokeColor = new NoColor();
+    //     rect.name = name;
+    // }
+
+    // bgLayer.locked = true;
+    // alert('min: ('+minArtboardX+', '+minArtboardY+'); max: ('+maxArtboardX+', '+maxArtboardY+')');
+}
+
+
 
 function createBackgroundLayer(){
     var actDoc = app.activeDocument;

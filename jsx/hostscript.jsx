@@ -4,21 +4,16 @@
 // Full debug mode
 $.level = 2;
 
-
 $._ext = (function () {
     'use strict';
-
     var ext = {};
     var destFolder;
-
-
 
     ext.selectDestination = function() {
         destFolder = Folder.selectDialog("Select Destination");
         if(destFolder) return destFolder.absoluteURI;
         else return "";
     }
-
 
     //Evaluate a file and catch the exception.
     ext.evalFile = function (path) {
@@ -41,8 +36,6 @@ $._ext = (function () {
             }
         }
     };
-
-
 
     return ext;
 

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<ExtensionManifest Version="4.0" ExtensionBundleId="com.majman.specs" ExtensionBundleVersion="2.1.0"
+<ExtensionManifest Version="4.0" ExtensionBundleId="com.majman.specs" ExtensionBundleVersion="2.1.2"
 		ExtensionBundleName="Specs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <Author>David Deraedt</Author>
-    <Abstract><![CDATA[Export all layers in just one click]]></Abstract>
+    <Author>Marshall Jones</Author>
+    <Abstract><![CDATA[Insta Specs and some other helpers]]></Abstract>
 	<ExtensionList>
-		<Extension Id="com.majman.specs" Version="2.1.0" />
+		<Extension Id="com.majman.specs" Version="2.1.2" />
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>

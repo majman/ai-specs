@@ -992,8 +992,13 @@ $.specAllText = function(options) {
 }
 
 $.makeArtboardBackground = function(options) {
-    artboardBackground();
+    bigArtboardBackground();
     dispatchCEPEvent("My Custom Event", 'makeArtboardBackground');
+    return "complete";
+}
+$.makeAllArtboardBackgrounds = function(options) {
+    allArtboardBackgrounds();
+    dispatchCEPEvent("My Custom Event", 'allArtboardBackgrounds');
     return "complete";
 }
 

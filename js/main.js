@@ -11,7 +11,7 @@
     function reloadPanel() {
         location.reload();
     }
-    $('#btn_reload').on('click', reloadPanel)
+    $('#btn_reload').on('click', reloadPanel);
 
     // Loads / executes a jsx file
     function loadJSXFile(pPath) {
@@ -39,8 +39,7 @@
             appendMessage(str)
         });
         themeManager.init();
-
-        loadJSXFile("/jsx/measurements.js")
+        loadJSXFile("/jsx/measurements.jsx");
 
         function getOptions(){
             var options = {};
@@ -108,6 +107,10 @@
         });
         $('#makeArtboardBackground').on('click', function(){
             csInterface.evalScript("$.makeArtboardBackground()");
+        });
+
+        $('#makeAllArtboardBackgrounds').on('click', function(){
+            csInterface.evalScript("$.makeAllArtboardBackgrounds()");
         });
 
         $('#testFunction').on('click', function(){
