@@ -106,3 +106,93 @@ function createBackgroundLayer(){
 }
 
 // artboardBackground();
+
+function renameArtboardsFromLayers(){
+    if (app.documents.length == 0) {
+        alert("No Open / Active Document Found");
+    } else {
+        var doc = app.activeDocument;
+        if (doc.artboards.length == doc.layers.length && doc.layers.length == doc.artboards.length) {
+            for (var i = 0, l = doc.artboards.length; i < l; i++) {
+                var ab = doc.artboards[i];
+                ab.name = doc.layers[i].name;
+            }
+            alert("Finished:\nRenaming of Artboards to match Layer names is complete");
+        } else {
+            alert("Opps: This wont work!\n The number of Layers and Artboards do not match");
+        }
+    }
+}
+
+function adjustArtboardName(pre, suff){
+    if (app.documents.length == 0) {
+        alert("No Open / Active Document Found");
+    } else {
+        var doc = app.activeDocument;
+        for (var i = 0, l = doc.artboards.length; i < l; i++) {
+            var ab = doc.artboards[i];
+            ab.name = pre + ab.name + suff;
+        }
+    }
+}
+function replaceArtboardName(find, repl){
+    if (app.documents.length == 0) {
+        alert("No Open / Active Document Found");
+    } else {
+        var doc = app.activeDocument;
+        for (var i = 0, l = doc.artboards.length; i < l; i++) {
+            var ab = doc.artboards[i];
+            var n = ab.name;
+            n = n.replace( new RegExp(find,'g'), repl );
+            ab.name = n;
+        }
+    }
+}
+
+var renameDlg = {
+    title: 'Rename Artboards',
+    groups: [
+        {
+            'type': 'edittext',
+            'label': 'prefix',
+            'default': ''
+        },
+        {
+            'type': 'edittext',
+            'label': 'suffix',
+            'default': ''
+        },
+        {
+            'type': 'edittext',
+            'label': 'find',
+            'defaults': ''
+        },
+        {
+            'type': 'edittext',
+            'label': 'replace',
+            'defaults': ''
+        }
+    ]
+}
+function onRenameDialog(){
+    // alert('onRenameDialog');
+    try {
+        var pre = this._groups._prefix.getValue();
+        var suf = this._groups._suffix.getValue();
+        adjustArtboardName(pre, suf);
+
+        var find = this._groups._find.getValue();
+        var repl = this._groups._replace.getValue();
+        replaceArtboardName(find, repl);
+        return true;
+    }catch(e){
+        alert(e);
+    }
+
+
+}
+
+function editArtboardNames(){
+    showDialogue(renameDlg, onRenameDialog);
+}
+

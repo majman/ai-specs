@@ -1,3 +1,71 @@
+function geometricBoundsToRect(geometricBounds, pathItems, padding){
+    var x = geometricBounds[0];
+    var y = geometricBounds[1];
+    var w = geometricBounds[2] - x;
+    var h = y - geometricBounds[3];
+    var pi = pathItems || activeDocument.activeLayer.pathItems;
+
+    var p = padding || 0;
+    var p2 = p * 2;
+
+    var rectRef = pi.rectangle(y + p, x - p, w + p2, h + p2);
+    rectRef.stroked = false;
+    rectRef.filled = true;
+    rectRef.fillColor = white;
+    rectRef.zOrder(ZOrderMethod.SENDBACKWARD);
+    return rectRef;
+}
+
+function alignTextItems(){
+    if(specItems.textItem && specItems.textItem.length > 1){
+        var textItems = specItems.textItem;
+        var minX;
+        _.each(textItems, function(item){
+            if(minX == undefined){
+                minX = item.tf.left;
+            }else if(!item.alignRight && item.tf.left < minX){
+                minX = item.tf.left;
+            }
+        })
+
+        // move tf specs to align left
+        var prevItem;
+        _.each(textItems, function(item){
+            if(!item.alignRight){
+                item.tf.left = minX;
+                if(prevItem != undefined){
+                    item.tf.top = prevItem.tf.top - prevItem.tf.height;
+                }else {
+                    alert('first item')
+                }
+                prevItem = item;
+            }
+        })
+    }
+}
+
+function drawColorSquare(fill, x, y, group){
+    var swatchSize = 30;
+    var x = -swatchSize * 1.25 >> 0;
+    var y = artboardTop - y + swatchSize/2;
+    var rectRef = group.pathItems.rectangle(y, x, swatchSize, swatchSize);
+
+    rectRef.fillColor = fill;
+    rectRef.stroked = false;
+
+    return rectRef;
+}
+
+function checkIfLockedOrHidden(el){
+    if(el.locked == true || el.visible == false || el.hidden == true) {
+        return true;
+    }
+    // recursive check parents
+    if(el.parent && el.parent.typename != "Document"){
+        return checkIfLockedOrHidden(el.parent)
+    }
+    return false;
+}
 
 //---------------hitTest functions ---------------
 function hitTest(a,b){
@@ -44,6 +112,67 @@ function componentToHex(c) {
 function rgbToHex(r, g, b) {
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
+
+// group object types: edittext, radiobutton, statictext, slider
+// var sampleWinOptions = {
+//     title: 'Rename Artboards',
+//     groups: [
+//         {
+//             'type': 'edittext',
+//             'label': 'prefix',
+//             'default': ''
+//         },
+//         {
+//             'type': 'edittext',
+//             'label': 'suffix',
+//             'default': ''
+//         }
+//     ]
+// }
+function showDialogue(opts, onOK){
+    var win = new Window('dialog', opts.title);
+
+    win._groups = {};
+    _.each(opts.groups, function(gr){
+        var t = gr.title || undefined;
+        if(gr.type == 'edittext'){
+            var et = new EditTextWithLabel(win, gr.label, gr.default);
+            win._groups['_'+gr.label] = et;
+        }
+    });
+
+    // ok / cancel
+    addOkCancelButtons(win, onOK);
+
+    win.show();
+}
+function addOkCancelButtons(win, func){
+    var gr = win.add("group");
+    var btn_cancel = gr.add("button", undefined, "Cancel");
+    var btn_ok = gr.add("button", undefined, "OK");
+    btn_ok.onClick = _.bind(func, win);
+}
+
+var EditTextWithLabel = function(win, label, defaultvalue){
+    this.gr = win.add("group");
+    this.gr.add("statictext", undefined, label);
+    this.et = this.gr.add("edittext", undefined, defaultvalue);
+    this.et.characters = 10;
+    // this.et.active = true;
+    return this;
+}
+EditTextWithLabel.prototype = {
+    getValue : function(){
+        var v = this.et.text;
+        return v;
+    },
+    activate : function(){
+        this.et.active = true;
+    }
+}
+
+
+
 
 
 /////////////////////////////////////////////////////////////////
@@ -152,3 +281,5 @@ function exploreObject(objectToExplore){
         return spc;
     }
 }
+
+

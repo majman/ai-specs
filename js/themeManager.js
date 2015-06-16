@@ -87,8 +87,6 @@ var themeManager = (function () {
         var gradBottom = bgdColor;
         var grad = "-webkit-gradient(linear, left top, left bottom, from(#"+gradTop+"), to(#"+gradBottom+"))";
 
-
-
         var styleId = "mainStyle";
         addRule(styleId, "body", "background-color:" + "#" + bgdColor);
         addRule(styleId, "body", "font-size:" + appSkinInfo.baseFontSize + "px;");
@@ -103,7 +101,7 @@ var themeManager = (function () {
         addRule(styleId, "button:active", "background-color:" + "#" + eltBgdColor);
         addRule(styleId, "button", "border-color: " + "#" + borderColor);
 
-
+        addRule(styleId, "input[type='checkbox']", "background-image:" + "-webkit-gradient(linear, left top, left bottom, from(#"+gradTop+"), to(#"+gradBottom+"))");
 
 
 

@@ -23,7 +23,8 @@
         $("#output").text(str);
     }
     function appendMessage(str){
-        var m = $("#output").html();
+        // var m = $("#output").html();
+        var m = 'Last Operation:';
         $("#output").text(m + "\n" + str);
     }
 
@@ -99,6 +100,17 @@
             var stringified = $.stringify(o);
             csInterface.evalScript("$.spaceBetweenSpec("+stringified+")");
         });
+        $('#h-spacing').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.horzSpacing("+stringified+")");
+        });
+        $('#v-spacing').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.vertSpacing("+stringified+")");
+        });
+
 
         $('#specAllText').on('click', function(){
             var o = getOptions();
@@ -112,6 +124,39 @@
         $('#makeAllArtboardBackgrounds').on('click', function(){
             csInterface.evalScript("$.makeAllArtboardBackgrounds()");
         });
+        $('#divideTextFrame').on('click', function(){
+            csInterface.evalScript("$.divideTextFrameLines()");
+        });
+
+        $('#specDistFromLeft').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specDistFromLeft("+stringified+")");
+        });
+        $('#specDistFromRight').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specDistFromRight("+stringified+")");
+        });
+        $('#specDistFromTop').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specDistFromTop("+stringified+")");
+        });
+        $('#specDistFromBottom').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.specDistFromBottom("+stringified+")");
+        });
+        $('#getSelectedColorSpecs').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.getSelectedColorSpecs("+stringified+")");
+        });
+        $('#doEditArtboardNames').on('click', function(){
+            csInterface.evalScript("$.doEditArtboardNames()");
+        });
+
 
         $('#testFunction').on('click', function(){
             // var o = getOptions();

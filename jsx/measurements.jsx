@@ -2,6 +2,8 @@
 #include "utils.js";
 #include "colorInfo.js";
 #include "artboard-bg.js";
+#include "divide-text-frame.js";
+#include "CreateCss.js";
 
 var actDoc;
 var selectedObjects;
@@ -16,28 +18,40 @@ white.red = 255;
 white.green = 255;
 white.blue = 255;
 
-var specTextFont = textFonts.getByName('AvenirNext-Medium');
-var specTextFontBold = textFonts.getByName('AvenirNext-Bold');
+var red = new RGBColor();
+red.red = 255;
+red.green = 0;
+red.blue = 0;
+
+var rectBackgroundColor = new RGBColor();
+rectBackgroundColor.red = 49;
+rectBackgroundColor.green = 54;
+rectBackgroundColor.blue = 61;
+
+
+var specTextFont = textFonts.getByName('AvenirNextCondensed-DemiBold');
 var specMult = 1.25;
-var specSize = 14 * specMult >> 0;
+var specSize = 16; //14 * specMult >> 0;
 var specSizeLg = 18;
 var specSizeSm = specSize * 0.85 >> 0;
 var specAutoLeading = false;
-var specLeading = 20 * specMult >> 0;
+var specLeading = 22; //20 * specMult >> 0;
 var artboardPadding = 150;
 
 var selectionInfo;
-
 var specLayer;
 var idx,
     actArtboard,
     artboardRect,
     artboardLeft,
     artboardTop,
-    artboardWidth;
+    artboardWidth,
+    artboardHeight;
 
+// Whitespace vars for string building
 var br = "\r";
-var brTab = "\r  "
+var tab = "   ";
+var brTab = br + tab;
 
 
 // store all specs objects / options for session
@@ -46,12 +60,14 @@ var specItems = {
 };
 var specOptions = {
     units: "dp",
-    fontUnits: "pt",
+    fontUnits: "dp",
     objectPadding: 10,
     unitBase: 3,
     colorSpec: false,
     guessBase: true
 };
+var allTextStyles = [];
+
 
 function addSpecItem(type, item){
     if(specItems[type]){
@@ -63,7 +79,6 @@ function addSpecItem(type, item){
 }
 
 function updateOptions(options){
-
     try{
         _.each(options, function(v, k){
             if(typeof(specOptions[k]) == "number"){
@@ -71,51 +86,29 @@ function updateOptions(options){
             }
             specOptions[k] = v;
         });
-
         if(options.guessBase == true){
             specOptions.unitBase = guessBaseUnits();
         }
-
     }catch(e){
         alert(e);
     }
-
-
 }
-
-function checkIfLockedOrHidden(el){
-    if(el.locked == true || el.visible == false || el.hidden == true) {
-        return true;
-    }
-    // recursive check parents
-    if(el.parent && el.parent.typename != "Document"){
-        return checkIfLockedOrHidden(el.parent)
-    }
-    return false;
-}
-
-var allTextStyles = [];
 
 function getAllTextStyles(options){
     updateArtboardInfo();
     getSpecLayer();
     updateOptions(options);
 
-
     allTextStyles = [];
     var atf = getAllTextFrames();
     _.each(atf, function(tf){
         getTextStyles(tf);
     })
-    // allTextStyles = _.sortBy(allTextStyles, function(s){
-    //     return s.itemName;
-    // });
+
     writeAllTextStyles();
-    // alert(atf.length+', ' + allTextStyles.length);
 }
 
 function getAllTextFrames(){
-
     var allTextFrames = activeDocument.textFrames;
     var len = allTextFrames.length;
     var atf = [];
@@ -133,253 +126,110 @@ function getAllTextFrames(){
     return atf;
 }
 
-function drawColorSquare(fill, x, y, group){
-    var swatchSize = 20;
-    var x = -swatchSize * 1.25 >> 0;
-    var y = artboardTop - y;
-    var rectRef = group.pathItems.rectangle(y, x, swatchSize, swatchSize);
-
-    rectRef.fillColor = fill;
-    rectRef.stroked = false;
-}
-
-function getSpecPos(pItem, style){
+function getSpecPos(obj, style){
     var x = 0;
-    var y = artboardTop + (pItem.top - artboardTop);
-    // -2160 , -2484.4462890625
-    // alert(artboardTop+' , '+pItem.top);
-    var x2 = pItem.left - artboardLeft;
+    var y = artboardTop + (obj.top - artboardTop);
+    var x2 = obj.left - artboardLeft;
     var y2 = y;
 
-    style.isLeft = true;
-
-    // on right half of artboard
-    if(pItem.left - artboardLeft > artboardWidth/2) {
+    // on left or right half of artboard
+    if(obj.left - artboardLeft > artboardWidth/2) {
         x = artboardLeft + artboardWidth + artboardPadding;
         style.isLeft = false;
     } else {
-        // on left half
         x = artboardLeft - artboardPadding;
+        style.isLeft = true;
     }
-
+    style.obj = obj;
+    style.gb = getGeometricBounds(obj);
     style.itemPos = {x: x2, y: y2};
     style.pos = {x: x, y: y + style.size/2};
-
-    style.width = pItem.width;
-    style.height = pItem.height;
+    style.width = obj.width;
+    style.height = obj.height;
 
     return {x: x, y: y};
 }
 
-var placeSpecNearItem = true;
-
 function writeAllTextStyles(){
     if(allTextStyles.length <= 0){
         alert('no named textFrames found');
+        return false;
     }
 
     allTextStyles = _.sortBy(allTextStyles, function(s){
         return s.itemPos.y;
     }).reverse();
 
-    if(!placeSpecNearItem){
-        var textStylesGroup = specLayer.groupItems.add();
-        textStylesGroup.name = 'Text Styles';
+    var allTextStylesGroup = specLayer.groupItems.add();
+    allTextStylesGroup.name = 'All Text Styles ';
 
+    var specGroups = [];
+    _.each(allTextStyles, function(ts, i){
+        var textStylesGroup = allTextStylesGroup.groupItems.add();
+        textStylesGroup.name = 'Text Styles '+i;
+
+        // build text string
+        var str = buildTextSpecString(ts.itemName + brTab, ts);
         var tf = textStylesGroup.textFrames.add();
-        tf.contents = '';
-        var str = '';
+        tf.contents = str;
+        setSpecStyles(tf, white);
 
-        var lineNum = 0;
+        if(ts.isLeft == true){
+            textStylesGroup.left = Math.abs(artboardLeft - textStylesGroup.width - artboardPadding/2);
+        }else {
+            textStylesGroup.left = Math.abs(artboardLeft + artboardWidth + artboardPadding/2);
+        }
+        textStylesGroup.top = ts.pos.y;
+        var r = geometricBoundsToRect(tf.geometricBounds, textStylesGroup.pathItems, 15);
 
-        _.each(allTextStyles, function(ts, i){
-            var fSize = Math.round(ts.size / specOptions.unitBase);
-            var rgb = getColorValues(ts.color);
-            var hex = rgbToHex(ts.color.red, ts.color.green, ts.color.blue);
-
-            // tf.textRange.characterAttributes.textFont = specTextFontBold;
-            // str += 'Rule # ' + Number(i + 1) + brTab;
-            str += ts.itemName + brTab;
-            str += 'font-family: ' + ts.family + brTab;
-            str += 'font-style: ' + ts.style + brTab;
-            str += 'font-size: ' + fSize + specOptions.fontUnits +  brTab;
-            str += 'color: rgb(' + rgb.join() +"), "+ hex + brTab;
-            if(ts.opacity != 100){
-                str += 'opacity: ' + ts.opacity + brTab;
-                lineNum++;
-            }
-            str += br;
-
-            lineNum += 6;
-
-            try {
-                drawColorSquare(ts.color, 0, lineNum * specLeading - (2 * specLeading) - specSize, textStylesGroup)
-            }catch(e){
-                alert(e)
-            }
-
-
-        });
-
-        tf.contents += str;
-
-        tf.textRange.characterAttributes.textFont = specTextFont;
-        tf.textRange.characterAttributes.size = specSize;
-        tf.textRange.characterAttributes.autoLeading = specAutoLeading;
-        tf.textRange.characterAttributes.leading = specLeading;
-        tf.textRange.fillColor = white;
-
-        textStylesGroup.left = artboardLeft + artboardWidth + specOptions.objectPadding*2 + specOptions.objectPadding * 2;
-    }else {
-        var allTextStylesGroup = specLayer.groupItems.add();
-        allTextStylesGroup.name = 'All Text Styles ';
-
-        var specGroups = [];
-        _.each(allTextStyles, function(ts, i){
-            var textStylesGroup = allTextStylesGroup.groupItems.add();
-            textStylesGroup.name = 'Text Styles '+i;
-
-            var tf = textStylesGroup.textFrames.add();
-            tf.contents = '';
-            var str = '';
-
-            var lineNum = 0;
-
-            var fSize = Math.round(ts.size / specOptions.unitBase);
-            var rgb = getColorValues(ts.color);
-            var hex = rgbToHex(ts.color.red, ts.color.green, ts.color.blue);
-
-            // tf.textRange.characterAttributes.textFont = specTextFontBold;
-            // str += 'Rule # ' + Number(i + 1) + brTab;
-            str += ts.itemName + brTab;
-            str += 'font-family: ' + ts.family + brTab;
-            str += 'font-style: ' + ts.style + brTab;
-            str += 'font-size: ' + fSize + specOptions.fontUnits +  brTab;
-            str += 'color: rgb(' + rgb.join() +"), "+ hex + brTab;
-            if(ts.opacity != 100){
-                str += 'opacity: ' + ts.opacity + brTab;
-                lineNum++;
-            }
-
-
-            lineNum += 6;
-
-            try {
-                drawColorSquare(ts.color, 0, lineNum * specLeading - (2 * specLeading) - specSize, textStylesGroup)
-            }catch(e){
-                alert(e)
-            }
-            tf.contents += str;
-            tf.textRange.characterAttributes.textFont = specTextFont;
-            tf.textRange.characterAttributes.size = specSize;
-            tf.textRange.characterAttributes.autoLeading = specAutoLeading;
-            tf.textRange.characterAttributes.leading = specLeading;
-            tf.textRange.fillColor = white;
-
-
-            if(ts.isLeft == true){
-                var p1 = [textStylesGroup.width + specOptions.objectPadding, specSize];
-                var p2 = [textStylesGroup.width + specOptions.objectPadding, -textStylesGroup.height + specSize + specLeading];
-
-                var path = textStylesGroup.compoundPathItems.add();
-                var newPath = textStylesGroup.pathItems.add();
-                newPath.setEntirePath( Array( p1, p2 ) );
-                newPath.stroked = true;
-                newPath.filled = false;
-                newPath.strokeColor = specColor;
-
-                var tsLeft = ts.pos.x - textStylesGroup.width;
-                // var connectX = ts.itemPos.x + Math.abs(tsLeft) - artboardPadding/2;
-                // var connectY = (p2[1] - p1[1])/2  + p1[1] >> 0;
-                // var p3 = [p1[0], connectY]
-                // var p4 = [connectX, connectY]
-
-
-                // var newPath = textStylesGroup.pathItems.add();
-                // newPath.setEntirePath( Array( p3, p4 ) );
-                // newPath.stroked = true;
-                // newPath.filled = false;
-                // newPath.strokeColor = specColor;
-
-
-                textStylesGroup.left = tsLeft;
-                textStylesGroup.top = ts.pos.y;
-
-            }else {
-                var p1 = [-artboardPadding/2, specSize];
-                var p2 = [-artboardPadding/2, -textStylesGroup.height + specSize + specLeading];
-
-                var path = textStylesGroup.compoundPathItems.add();
-                var newPath = textStylesGroup.pathItems.add();
-                newPath.setEntirePath( Array( p1, p2 ) );
-                newPath.stroked = true;
-                newPath.filled = false;
-                newPath.strokeColor = specColor;
-
-                var tsLeft = ts.pos.x;
-
-
-                var r = ts.itemPos.x + ts.width - artboardLeft;
-                var distanceFromRight = artboardWidth - r;
-                // alert(r + ', '+distanceFromRight + ', '+p1[0])
-
-                // 890.9453125, 189.0546875, -75
-
-                var connectX = p1[0] - distanceFromRight;
-                var connectY = (p2[1] - p1[1])/2  + p1[1] >> 0;
-                var p3 = [p1[0], connectY]
-                var p4 = [connectX, connectY]
-
-
-                var newPath = textStylesGroup.pathItems.add();
-                newPath.setEntirePath( Array( p3, p4 ) );
-                newPath.stroked = true;
-                newPath.filled = false;
-                newPath.strokeColor = specColor;
-
-
-                textStylesGroup.left = tsLeft - Math.abs(connectX);
-                textStylesGroup.top = ts.pos.y;
-
-                specGroups.push(textStylesGroup)
-
-            }
-
-            // hitTest()
-            if(specGroups.length >= 1){
-                _.each(specGroups, function(specGroup){
-                    var ht = hitTest(textStylesGroup, specGroup)
-                    if(ht == true){
-
-                        if(textStylesGroup.top > specGroup.top){
-                            textStylesGroup.top = specGroup.top + specGroup.height;
-                        }else {
-                            textStylesGroup.top = specGroup.top - specGroup.height;
-                        }
+        // hitTest()
+        if(specGroups.length >= 1){
+            _.each(specGroups, function(specGroup){
+                var ht = hitTest(textStylesGroup, specGroup)
+                if(ht == true){
+                    if(textStylesGroup.top > specGroup.top){
+                        textStylesGroup.top = specGroup.top + specGroup.height + 20;
+                    }else {
+                        textStylesGroup.top = specGroup.top - specGroup.height - 20;
                     }
-                });
-            }
+                }
+            });
+        }
 
-            var p1 = [textStylesGroup.left + textStylesGroup.width, textStylesGroup.top - (textStylesGroup.height  -  specLeading)/2]
-            var p2 = [artboardLeft + ts.itemPos.x - specOptions.objectPadding, ts.itemPos.y - ts.height/2]
-            var newPath = textStylesGroup.pathItems.add();
-            newPath.setEntirePath( Array( p1, p2 ) );
-            newPath.stroked = true;
-            newPath.filled = false;
-            newPath.strokeColor = specColor;
+        // draw pointers
+        if(ts.isLeft == true){
+            var p3 = [textStylesGroup.left + textStylesGroup.width, textStylesGroup.top - (textStylesGroup.height - specLeading)/2]
+            var p4 = [ts.gb.left, ts.gb.center[1]];
+            drawSpecLine(p3, p4, textStylesGroup);
 
+        }else {
+            var gb2 = getGeometricBounds(textStylesGroup);
+            var p3 = [ts.gb.right, ts.gb.center[1]];
+            var p4 = [artboardLeft + artboardWidth + artboardPadding/2, gb2.center[1]];
+            drawSpecLine(p3, p4, textStylesGroup);
+        }
 
-            specGroups.push(textStylesGroup);
-
-
-        });
-
-
-
-    }
+        specGroups.push(textStylesGroup);
+    });
 
 }
+function drawSpecLine(p1, p2, group){
+    var newPath = group.pathItems.add();
+    newPath.setEntirePath( Array( p1, p2 ) );
+    newPath.stroked = true;
+    newPath.filled = false;
+    newPath.strokeColor = specColor;
+    newPath.zOrder(ZOrderMethod.SENDTOBACK);
+    return newPath;
+}
 
+function setSpecStyles(tf, col){
+    tf.textRange.characterAttributes.textFont = specTextFont;
+    tf.textRange.characterAttributes.size = specSize;
+    tf.textRange.characterAttributes.autoLeading = specAutoLeading;
+    tf.textRange.characterAttributes.leading = specLeading;
+    tf.textRange.fillColor = col;
+}
 
 function getTextStyles(tf){
     var words = tf.words;
@@ -411,17 +261,13 @@ function TextStyle(tRange, itemName, tf){
     this.leading = ca.leading;
     this.tracking = ca.tracking;
     this.opacity = 100;
+    this.lines = tf.lines.length;
 
     try {
-        if(tf.opacity < 100){
-            this.opacity = tf.opacity;
-        }
-    }catch(e){
-        // opacity
-    }
+        this.opacity = tf.opacity;
+    }catch(e){}
 
     this.itemName = itemName;
-
     this.id = '';
     _.each(this, function(v, k){
         this.id += v;
@@ -429,8 +275,6 @@ function TextStyle(tRange, itemName, tf){
 
     return this;
 }
-
-
 
 function getSpecLayer(){
     actDoc = app.activeDocument;
@@ -456,7 +300,7 @@ function updateArtboardInfo(){
     artboardLeft = artboardRect[0];
     artboardTop = artboardRect[1];
     artboardWidth = artboardRect[2] - artboardRect[0];
-
+    artboardHeight = (artboardRect[3] - artboardRect[1]);
 
 }
 
@@ -493,59 +337,21 @@ function SelectionInfo(direction, options){
     }
     for(var i = 0; i < numObjects; i++){
         var o = selectedObjects[i];
-        var spec = new SpecLayer(o, direction);
+        if(o.typename == "TextFrame"){
+            var spec = new TextSpecLayer(o);
+        } else {
+            var spec = new SpecLayer(o, direction);
+        }
+
     }
     this.specItems = specItems;
 
-    // alignTextItems();
     return this;
 }
 
-function alignTextItems(){
-    if(specItems.textItem && specItems.textItem.length > 1){
-        var textItems = specItems.textItem;
-        var minX;
-        _.each(textItems, function(item){
-            if(minX == undefined){
-                minX = item.tf.left;
-            }else if(!item.alignRight && item.tf.left < minX){
-                minX = item.tf.left;
-            }
-        })
-
-        // move tf specs to align left
-        var prevItem;
-        _.each(textItems, function(item){
-            if(!item.alignRight){
-                item.tf.left = minX;
-                if(prevItem != undefined){
-                    item.tf.top = prevItem.tf.top - prevItem.tf.height;
-                }else {
-                    alert('first item')
-                }
-                prevItem = item;
-            }
-        })
-
-    }else {
-
-    }
-
-}
-
+// Vertical & Horizontal dimensions and spacing
 function SpecLayer(object, direction) {
     this.object = object;
-
-    // Do Text Specs
-    if ( this.object.typename == "TextFrame" ) {
-        try {
-            this.text = new TextSpec(this)
-            addSpecItem('textItem', this.text);
-        } catch(e) {
-            alert(e);
-        }
-        return this;
-    }
 
     // Do Spacing
     if(direction == 'spaceBetween'){
@@ -575,7 +381,18 @@ function SpecLayer(object, direction) {
             alert('vert '+e);
         }
     }
+    return this;
+}
 
+
+function TextSpecLayer(object, direction) {
+    this.object = object;
+    try {
+        this.text = new TextSpec(this)
+        addSpecItem('textItem', this.text);
+    } catch(e) {
+        alert(e);
+    }
     return this;
 }
 
@@ -590,66 +407,19 @@ function TextSpec(group){
         textRange = object.textRanges[0];
     }
 
-    var characterAttributes = textRange.characterAttributes;
+    var style = TextStyle(textRange, object.name, object);
 
-    var textFont = characterAttributes.textFont;
+    var specGroup = specLayer.groupItems.add();
 
-    var fontOpacity = 100;
-    try {
-        fontOpacity = object.opacity;
-    }catch(e) {
-        alert(e);
-    }
+    // build text string
+    var str = buildTextSpecString('', style);
 
-    var fontSize = Math.round(characterAttributes.size / specOptions.unitBase);
-    var fontColor = characterAttributes.fillColor;
+    this.tf = specGroup.textFrames.add();
+    this.tf.contents = object.name + brTab + str;
 
-    var rgb = getColorValues(fontColor);
-    var hex = rgbToHex(fontColor.red, fontColor.green, fontColor.blue);
-    var fontName = textFont.family;
-    var fontStyle = textFont.style;
-    var leading = characterAttributes.leading;
-    var tracking = characterAttributes.tracking;
-    var letterSpacing = fontSize * (tracking * .001);
+    setSpecStyles(this.tf, rectBackgroundColor);
 
-    var str = '';
-
-
-    str += 'font-family: ' + fontName + brTab;
-    str += 'font-style: ' + fontStyle + brTab;
-    str += 'font-size: ' + fontSize + specOptions.fontUnits +  brTab;
-    str += 'color: rgb(' + rgb.join() +"), "+ hex + brTab;
-
-    if(textRange.lines.length > 1){
-        str += 'leading: ' + (Number(leading / specOptions.unitBase)) + specOptions.fontUnits + brTab;
-    }
-    if(fontOpacity < 100){
-        str += 'opacity: ' + Math.round(fontOpacity) + brTab;
-    }
-    if(tracking > 0){
-        str += 'letter-spacing: ' + letterSpacing + specOptions.fontUnits + brTab;
-    }
-
-
-    this.tf = specLayer.textFrames.add();
-
-
-    var n = object.name;
-    this.tf.contents = n + brTab;
-
-    this.tf.textRange.characterAttributes.textFont = specTextFont;
-    this.tf.contents += str;
-
-    this.tf.textRange.characterAttributes.size = specSize;
-    this.tf.textRange.characterAttributes.autoLeading = specAutoLeading;
-    this.tf.textRange.characterAttributes.leading = specLeading;
-    this.tf.textRange.fillColor = white;
-
-    var line1 = this.tf.textRange.lines[0];
-
-    line1.characterAttributes.textFont = specTextFontBold;
-
-
+    // place textfield on left or right
     if(object.left - artboardLeft > artboardWidth/2){
         this.alignRight = true;
         this.tf.left = artboardLeft + artboardWidth + specOptions.objectPadding*2 + specOptions.objectPadding * 2;
@@ -659,68 +429,124 @@ function TextSpec(group){
 
     this.tf.top = object.top;
 
+    var r = geometricBoundsToRect(this.tf.geometricBounds, specGroup.pathItems, 15);
     return this;
 }
 
-function Spacing(selectedObjects){
-    // this.object = group.object;
+function buildTextSpecString(start, style){
+    var fontSize = Math.round(style.size / specOptions.unitBase);
+    var rgb = getColorValues(style.color);
+    var hex = rgbToHex(style.color.red, style.color.green, style.color.blue);
 
+    var str = start;
+    str += 'font-family: ' + style.family + brTab;
+    str += 'font-style: ' + style.style + brTab;
+    str += 'font-size: ' + fontSize + specOptions.fontUnits + brTab;
+    str += 'rgb: rgb(' + rgb.join() + ')' + brTab;
+    str += 'hex: ' + hex;
+
+    if(style.lines.length > 1){
+        str += brTab + 'leading: ' + (Number(style.leading / specOptions.unitBase)) + specOptions.fontUnits;
+    }
+    if(style.opacity < 100){
+        str += brTab + 'opacity: ' + Math.round(style.opacity);
+    }
+    if(style.tracking > 0){
+        str += brTab + 'letter-spacing: ' + style.size * (style.tracking * .001);
+    }
+    return str;
+}
+
+function distFromEdge(edge, options){
+    updateArtboardInfo();
+    getSpecLayer();
+    updateOptions(options);
     var numObjects = selectedObjects.length;
-    // alert(numObjects)
+    for(var i = 0; i < numObjects; i++){
+
+        var ob1 = selectedObjects[i];
+        var gb1 = getGeometricBounds(ob1);
+        var dist = 0;
+        var length = 0;
+        var p1 = [0,0];
+        var p2 = [0,0];
+        var lengthTf;
+        var alignText = 'top';
+
+        if(edge == 'left'){
+            dist = Math.abs(gb1.left - artboardLeft);
+            p1 = [artboardLeft, gb1.center[1]];
+            p2 = [gb1.left, gb1.center[1]];
+        }else if(edge == 'right'){
+            dist = Math.abs((artboardLeft + artboardWidth) - gb1.right);
+            p1 = [gb1.right, gb1.center[1]];
+            p2 = [artboardLeft + artboardWidth, gb1.center[1]];
+        }else if(edge == 'top'){
+            alignText = 'left';
+            dist = Math.abs(gb1.top);
+            p1 = [gb1.center[0], 0];
+            p2 = [gb1.center[0], gb1.top];
+        }else if(edge == 'bottom'){
+            alignText = 'left';
+            dist = Math.abs(artboardHeight - gb1.bottom);
+            p1 = [gb1.center[0], gb1.bottom];
+            p2 = [gb1.center[0], artboardHeight];
+        }
+        length = Math.round(dist / specOptions.unitBase);
+
+
+        try {
+            lengthTf = addText(length + " " + specOptions.units, p1, p2, dist, alignText);
+        } catch(e){
+            alert(e);
+        }
+
+
+        var cpItems = specLayer.compoundPathItems.add();
+        var newPath = cpItems.pathItems.add();
+        newPath.setEntirePath( Array( p1, p2 ) );
+        newPath.stroked = true;
+        newPath.filled = false;
+        newPath.strokeColor = specColor;
+        cpItems.name = edge + " edge " + length;
+    }
+}
+
+function Spacing(selectedObjects, dir){
+    var numObjects = selectedObjects.length;
+
     if(numObjects == 2){
         var ob1 = selectedObjects[0];
         var ob2 = selectedObjects[1];
 
-        // {left, top, right, bottom, center}
-        var gb1 = getGeometricBounds(ob1);
+        var gb1 = getGeometricBounds(ob1);  // {left, top, right, bottom, center}
         var gb2 = getGeometricBounds(ob2);
 
         this.p1 = [0,0];
         this.p2 = [0,0];
 
-        if(gb1.top == gb2.top){
-            var sorted = _.sortBy([gb1,gb2], function(ob){
-                return ob.center[0]
-            });
-            var l = sorted[0];
-            var r = sorted[1];
-            var diff = Math.round(r.left - l.right);
+        var lengthTf;
+        var paragraph, leading, length;
+        var textAlign = '';
+        if(Math.round(gb1.top) == Math.round(gb2.top) || dir == 'horz'){
+            var spacing = getSpacing(gb1, gb2, 'horz');
+            textAlign = 'top';
+        }else if(Math.round(gb1.left) == Math.round(gb2.left) || dir == 'vert'){
+            var spacing = getSpacing(gb1, gb2, 'vert');
+            textAlign = 'left';
+        }else {
+            return;
+        }
 
-            var paragraph, leading, length;
-            length = diff / specOptions.unitBase;
+        var diff = spacing.diff;
+        length = diff / specOptions.unitBase;
+        this.p1 = spacing.p1;
+        this.p2 = spacing.p2;
 
-            this.p1 = [l.right, l.center[1]];
-            this.p2 = [r.left, l.center[1]];
-
-            try {
-                addText(length + " " + specOptions.units, this.p1, this.p2, diff, 'top')
-            } catch(e){
-                alert(e);
-            }
-
-
-        }else if(gb1.left == gb2.left){
-            var sorted = _.sortBy([gb1,gb2], function(ob){
-                return ob.center[1]
-            });
-            var b = sorted[0];
-            var t = sorted[1];
-
-            // alert(b.center +' \n' + t.center)
-
-            // return this;
-            var diff = Math.round(t.bottom - b.top);
-
-            var paragraph, leading, length;
-            length = diff / specOptions.unitBase;
-
-            this.p1 = [t.center[0], t.bottom];
-            this.p2 = [t.center[0], b.top];
-            try {
-                addText(length + " " + specOptions.units, this.p1, this.p2, diff, 'left')
-            } catch(e){
-                alert(e);
-            }
+        try {
+            lengthTf = addText(length + " " + specOptions.units, this.p1, this.p2, diff, textAlign);
+        } catch(e){
+            alert(e);
         }
 
         this.path = specLayer.compoundPathItems.add();
@@ -729,30 +555,65 @@ function Spacing(selectedObjects){
         newPath.stroked = true;
         newPath.filled = false;
         newPath.strokeColor = specColor;
-
         this.path.name = direction + " line-" + Math.round(length);
     }
 
     return this;
 }
 
+function getSpacing(gb1, gb2, dir){
+    var sorted;
+    var a, b;
+    var p1, p2;
+    if(dir == 'horz'){
+        sorted = _.sortBy([gb1,gb2], function(ob){
+            return ob.center[0]
+        });
+        a = sorted[0].right;
+        b = sorted[1].left;
+
+        p1 = [a, sorted[0].center[1]];
+        p2 = [b, sorted[0].center[1]];
+    }else {
+        sorted = _.sortBy([gb1,gb2], function(ob){
+            return ob.center[1]
+        });
+        var a = sorted[0].top;
+        var b = sorted[1].bottom;
+        p1 = [sorted[0].center[0], b];
+        p2 = [sorted[0].center[0], a];
+    }
+    var diff = Math.round(b - a);
+    return {
+        diff: diff,
+        p1: p1,
+        p2: p2
+    };
+}
+
 function addText(txt, p1, p2, diff, pos){
     var justification;
     var tf = specLayer.textFrames.add();
+
     tf.contents = txt;
     tf.textRange.characterAttributes.textFont = specTextFont;
     tf.textRange.characterAttributes.size = specSizeSm;
     tf.textRange.fillColor = specColor;
-
     var paragraph = tf.paragraphs[0];
-    var leading = paragraph.leading;
+    // .characterAttributes.leading
+    var ca = paragraph.characterAttributes;
+    var leading = specLeading;
+    try {
+        leading = ca.leading;
+    } catch(e){
 
+    }
 
-    if(pos == 'top'){
+    if(pos && pos == 'top'){
         justification = Justification.CENTER;
         tf.left = p1[0] + diff/2;
         tf.top = p1[1] + leading + specOptions.objectPadding;
-    }else if(pos == 'left'){
+    }else if(pos && pos == 'left'){
         justification = Justification.RIGHT;
 
         tf.left = p1[0] - specOptions.objectPadding;
@@ -762,140 +623,155 @@ function addText(txt, p1, p2, diff, pos){
         justification = Justification.LEFT;
     }
 
-
-
     paragraph.justification = justification;
-
-
-
     return tf;
 }
-
-
 // direction: "horz" | "vert"
 function Spec(direction, group){
-
-    var paragraph, leading, length;
+    var length;
 
     this.direction = direction;
     this.object = group.object;
     this.height = Math.round(this.object.height);
     this.width = Math.round(this.object.width);
-    this.gb = this.geometricBounds;
-    this.center = findCenter(this.object);
 
-    this.tf = specLayer.textFrames.add();
     this.p1 = [0,0];
     this.p2 = [0,0];
 
     if(direction == "horz"){
-
         length = this.width / specOptions.unitBase;
-        this.tf.contents = length + " " + specOptions.units;
-
-        paragraph = this.tf.paragraphs[0];
-        leading = paragraph.leading;
-        paragraph.justification = Justification.CENTER;
-
-        this.tf.left = this.center[0] - this.tf.width/2;
-        this.tf.top = this.object.top + leading + specOptions.objectPadding;
         this.p1 = [this.object.left, this.object.top + specOptions.objectPadding];
         this.p2 = [this.object.left + this.width, this.object.top + specOptions.objectPadding];
-
+        this.tf = addText(length + " " + specOptions.units, this.p1, this.p2, this.width, 'top');
     }else if(direction == "vert"){
-
         length = this.height / specOptions.unitBase;
-        this.tf.contents = length + " " + specOptions.units;
-
-        paragraph = this.tf.paragraphs[0];
-        leading = paragraph.leading;
-        paragraph.justification = Justification.RIGHT;
-
-        this.tf.left = this.object.left - this.tf.width - specOptions.objectPadding*2;
-        this.tf.top = this.center[1] + leading/2;
-
         this.p1 = [this.object.left - specOptions.objectPadding, this.object.top];
         this.p2 = [this.object.left - specOptions.objectPadding, this.object.top - this.height];
-
+        this.tf = addText(length + " " + specOptions.units, this.p1, this.p2, this.height, 'left');
     }
-
-
     if(specOptions.colorSpec == true){
         if(direction == 'vert' && group.horz != undefined){
             // skip
         }else {
 
-
-            try {
-                // selection[0].fillColor.typename
-
-                var objColor = this.object.fillColor;
-                var isGrad = false;
-                if(objColor.typename == 'SpotColor'){
-                    objColor = objColor.spot.color;
-                }else if(objColor.typename == 'GradientColor'){
-                    isGrad = true;
-                }else if(objColor.typename != 'RGBColor'){
-
-                }
-                if(!isGrad){
-                    var hex = rgbToHex(objColor.red, objColor.green, objColor.blue);
-                    this.tf.contents += brTab + 'color: '+hex;
-                    this.tf.top += leading * 1.5;
-                    var op = 100;
-                    try {
-                        op = this.object.opacity;
-                    }catch(e) {
-                        alert(e);
-                    }
-
-                    if(op != 100){
-                        this.tf.contents += brTab + 'opacity: ' + op + "%";
-                        this.tf.top += leading * 1.5;
-                    }
-
-                }else {
-
-                    var stops = objColor.gradient.gradientStops;
-                    var gText = '';
-                    _.each(stops, function(stop){
-                        if(stop.color.typename == 'RGBColor'){
-                            var hex = rgbToHex(stop.color.red, stop.color.green, stop.color.blue);
-                            var op = Math.round(stop.opacity) + '%';
-                            var rp = Math.round(stop.rampPoint)+ '%';
-                            gText += brTab + 'color: '+hex + ', opacity: ' + op + ', stop: '+rp;
-                        }
-                    });
-
-                    this.tf.contents += gText;
-                    this.tf.top += leading * 1.5 * stops.length;
-
-                }
-
-
-
-
-            }catch(e){
-                alert(e);
-            }
         }
     }
 
-    this.path = specLayer.compoundPathItems.add();
     // Create the path items
+    this.path = specLayer.compoundPathItems.add();
     var newPath = this.path.pathItems.add();
     newPath.setEntirePath( Array( this.p1, this.p2 ) );
     newPath.stroked = true;
     newPath.filled = false;
     newPath.strokeColor = specColor;
-
-    this.tf.textRange.characterAttributes.textFont = specTextFont;
-    this.tf.textRange.characterAttributes.size = specSizeLg;
-    this.tf.textRange.fillColor = specColor;
-
     this.path.name = direction + " line-" + Math.round(length);
 
+    this.tf.textRange.characterAttributes.textFont = specTextFont;
+    this.tf.textRange.characterAttributes.size = specSize;
+    this.tf.textRange.fillColor = specColor;
     return this;
+}
+
+function getColorSpecs(options){
+
+    updateArtboardInfo();
+    getSpecLayer();
+    updateOptions(options);
+
+    var numObjects = selectedObjects.length;
+    for(var i = 0; i < numObjects; i++){
+
+        try {
+            var obj = selectedObjects[i];
+            if(obj.typename == "TextFrame"){
+                continue;
+            }
+
+            var objColor;
+            if(obj.filled){
+                objColor = obj.fillColor;
+            }else if(obj.stroked){
+                objColor = obj.strokeColor;
+            }else {
+                continue;
+            }
+            var group = specLayer.groupItems.add();
+
+            var objName = obj.name;
+            var isGrad = false;
+            var txt = objName;
+            if(objColor.typename == 'SpotColor'){
+                objColor = objColor.spot.color;
+            }else if(objColor.typename == 'GradientColor'){
+                isGrad = true;
+            }else if(objColor.typename != 'RGBColor'){
+
+            }
+
+            if(!isGrad){
+                var hex = rgbToHex(objColor.red, objColor.green, objColor.blue);
+                txt += br + 'color: #'+hex;
+
+                var op = 100;
+                try {
+                    op = obj.opacity;
+                }catch(e) {
+                    alert(e);
+                }
+                if(op != 100){
+                    txt += br + 'opacity: ' + Math.round(op) + "%";
+                }
+
+            }else {
+                var stops = objColor.gradient.gradientStops;
+                var gText = ' gradient';
+
+                _.each(stops, function(stop, i){
+                    if(stop.color.typename == 'RGBColor'){
+                        var hex = rgbToHex(stop.color.red, stop.color.green, stop.color.blue);
+                        var op = Math.round(stop.opacity) + '%';
+                        var rp = Math.round(stop.rampPoint)+ '%';
+                        gText += br + 'color '+ i +': #'+hex + ', opacity: ' + op + ', stop: '+rp;
+                    }else if(stop.color.typename == 'GrayColor'){
+                        var perc = ((100 - stop.color.gray)/100) * 255;
+                        // alert(perc);
+                        var hex = rgbToHex(perc, perc, perc);
+                        var op = Math.round(stop.opacity) + '%';
+                        var rp = Math.round(stop.rampPoint)+ '%';
+                        gText += br + 'color '+ i +': #'+hex + ', opacity: ' + op + ', stop: '+rp;
+                    }
+                });
+                txt += gText;
+            }
+
+            var gb = getGeometricBounds(obj);
+
+            var p1 = [gb.right, gb.center[1]];
+            var p2 = [artboardLeft + artboardWidth + 50, gb.center[1]];
+
+            var tf = addText(txt);
+            tf.move(group, ElementPlacement.PLACEATBEGINNING);
+
+            var gb2 = getGeometricBounds(tf);
+            drawColorSquare(objColor, 0, artboardTop-gb2.center[1], group);
+
+            group.left = p2[0];
+            group.top = p2[1];
+
+            var gb3 = getGeometricBounds(group);
+
+            p1[1] = gb3.center[1];
+            p2[1] = gb3.center[1];
+            var newPath = group.pathItems.add();
+            newPath.setEntirePath( Array( p1, p2 ) );
+            newPath.stroked = true;
+            newPath.filled = false;
+            newPath.strokeColor = specColor;
+
+        }catch(e){
+            alert(e);
+        }
+    }
 }
 
 // get colors based on Illustrator Color Type
@@ -973,17 +849,41 @@ $.specVert = function(options) {
     return "complete";
 }
 
+$.spaceBetweenSpec = function(options) {
+    selectionInfo = new SelectionInfo('spaceBetween', options);
+    dispatchCEPEvent("My Custom Event", 'spaceBetweenSpec');
+    return "complete";
+}
+
+$.horzSpacing = function(options) {
+    updateArtboardInfo();
+    getSpecLayer();
+    updateOptions(options);
+    var selectedObjects = actDoc.selection;
+    var sp = new Spacing(selectedObjects, 'horz');
+    dispatchCEPEvent("My Custom Event", 'horzSpacing');
+    return "complete";
+}
+
+$.vertSpacing = function(options) {
+    updateArtboardInfo();
+    getSpecLayer();
+    updateOptions(options);
+    var selectedObjects = actDoc.selection;
+    var sp = new Spacing(selectedObjects, 'vert');
+    dispatchCEPEvent("My Custom Event", 'vertSpacing');
+    return "complete";
+}
+
+
+
 $.specColors = function(options) {
     colorInfo = new ColorInfo(options);
     dispatchCEPEvent("My Custom Event", 'colors');
     return "complete";
 }
 
-$.spaceBetweenSpec = function(options) {
-    selectionInfo = new SelectionInfo('spaceBetween', options);
-    dispatchCEPEvent("My Custom Event", 'spaceBetweenSpec');
-    return "complete";
-}
+
 
 $.specAllText = function(options) {
     getAllTextStyles(options);
@@ -1001,6 +901,46 @@ $.makeAllArtboardBackgrounds = function(options) {
     dispatchCEPEvent("My Custom Event", 'allArtboardBackgrounds');
     return "complete";
 }
+
+$.divideTextFrameLines = function(options) {
+    divideTextFrame();
+    dispatchCEPEvent("My Custom Event", 'divideTextFrame');
+    return "complete";
+}
+
+$.specDistFromLeft = function(options) {
+    distFromEdge('left', options);
+    dispatchCEPEvent("My Custom Event", 'distFromEdge');
+    return "complete";
+}
+$.specDistFromRight = function(options) {
+    distFromEdge('right', options);
+    dispatchCEPEvent("My Custom Event", 'distFromEdge');
+    return "complete";
+}
+$.specDistFromTop = function(options) {
+    distFromEdge('top', options);
+    dispatchCEPEvent("My Custom Event", 'distFromEdge');
+    return "complete";
+}
+$.specDistFromBottom = function(options) {
+    distFromEdge('bottom', options);
+    dispatchCEPEvent("My Custom Event", 'distFromEdge');
+    return "complete";
+}
+$.getSelectedColorSpecs = function(options) {
+    getColorSpecs(options);
+    dispatchCEPEvent("My Custom Event", 'getColorSpecs');
+    return "complete";
+}
+
+$.doEditArtboardNames = function() {
+    editArtboardNames();
+    dispatchCEPEvent("My Custom Event", 'editArtboardNames');
+    return "complete";
+}
+
+
 
 $.testFunction = function(options) {
     var val = {"a": "foo"};

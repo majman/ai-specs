@@ -3,13 +3,15 @@
 
 body {
     font-family: "Lucida Grande";
-    font-size: 12px;
+    font-size: 10px;
+    font-weight: bold;
     margin: 0;
     padding: 10px;
-    /*background: #d6d6d6;*/
     background: #424242;
     border: none;
+    text-transform: capitalize;
     -webkit-font-smoothing: antialiased;
+    -webkit-user-select: none;
 }
 a {
     text-decoration: none;
@@ -24,6 +26,7 @@ a {
 }
 
 .section {
+    position: relative;
     padding: 10px 0;
      -webkit-box-shadow: 0 1px rgba(255,255,255,.1), 0 -1px rgba(0,0,0,.3) inset;
 }
@@ -48,25 +51,35 @@ a {
 .columns {
     display: -webkit-flex;
     -webkit-justify-content: space-between;
+    -webkit-flex-wrap: wrap;
     position: relative;
 }
 .column {
     max-width: 50%;
     padding: 0 5px;
     box-sizing: border-box;
+    -webkit-flex: 1 0 auto;
+}
+
+.flex-wrap {
+    display: -webkit-flex;
+    -webkit-justify-content: space-between;
+    -webkit-flex-wrap: wrap;
+}
+.flex-wrap .flex-item {
+    -webkit-flex: 1 0 auto;
 }
 
 
-
 .button {
-    font-family:inherit;
-    color:inherit;
-    font-size:inherit;
-    font-weight: normal;
+    font-family: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
     display: inline-block;
     margin: 0 5px 5px 0;
-    padding: 0 10px;
-    height: 32px;
+    padding: 0 8px;
+    height: 24px;
     line-height: 24px;
     -webkit-border-radius: 2px;
     border: none;
@@ -74,11 +87,12 @@ a {
     -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.5) inset,
         0 1px rgba(255,255,255, .15);
     text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+    text-transform: capitalize;
+    -webkit-font-smoothing: antialiased;
 }
 .columns .button {
     -webkit-flex: 1 0 auto;
 }
-
 
 
 .form-input{
@@ -88,18 +102,32 @@ a {
 .form-input:not(.checkbox-input) {
     white-space: nowrap;
     overflow: hidden;
+    display: -webkit-flex;
+    -webkit-justify-content: center;
 }
 .form-input label {
-    display: inline-block;
-    width: 60px;
+    font-family: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: normal;
+    display: block;
+    width: auto;
     text-align: right;
     vertical-align: middle;
+}
+.text-input label{
+    line-height: 15px;
+    padding: 1px 4px 0 0;
+    box-sizing: border-box;
+    -webkit-flex: 0 1 auto;
+    width: 30%;
 }
 .input-empty{
     opacity: .5;
 }
 input[type="text"] {
     /*background: #ffffff;*/
+    width: 40px;
     font-family:inherit;
     font-size: inherit;
     outline: 0;
@@ -107,26 +135,52 @@ input[type="text"] {
     line-height: 15px;
     padding: 1px 3px 0;
     -webkit-border-radius: 1px;
-    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.75) inset;
-    /*color: inherit;*/
-    width: 40px;
+
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.75) inset;
     cursor: text;
     margin: 0;
+    box-sizing: border-box;
+
+}
+.text-input input[type="text"] {
+    -webkit-appearance:none;
+    display: block;
+
 }
 
 input[type="checkbox"] {
-    vertical-align: middle;
+    -webkit-appearance:none;
+    height: 12px;
+    width: 12px;
+    border: none;
+    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,.5) inset,
+        0 1px rgba(255,255,255, .15);
+
+    -webkit-align-self: center;
 }
+input[type="checkbox"]:checked {
+    background: rgba(0,0,0,0.5);
+}
+
 .checkbox-input {
     line-height: 14px;
     padding: 5px 0 0;
+
 }
 .checkbox-input.form-input label {
-    text-align: left;
     width: auto;
+    display: -webkit-flex;
+    text-align: left;
+}
+.checkbox-label {
+    font-family: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: normal;
+
+    -webkit-align-self: center;
 }
 .checkbox-input input[type="checkbox"] {
-    float: left;
     margin-right: 9px;
 }
 
