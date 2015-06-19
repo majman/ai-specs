@@ -10,97 +10,143 @@
     <div id="content">
         <div id="main">
 
-            <div class="section">
-                <div class="button-group columns">
-                    <button id="auto_spec" class="both icon-button button flex-item">both</button>
-                    <button id="horz_spec" class="horz icon-button button flex-item">horz</button>
-                    <button id="vert_spec" class="vert icon-button button flex-item">vert</button>
+        <div class="section section-group columns">
+            <div class="flex-item">
+                <div class="section">
+                    <div class="section-header">Dimensions:</div>
+                    <div class="button-group icon-button-group columns">
+                        <button id="auto_spec" class="both icon-button button flex-item"><span class="button-text">both</span></button>
+                        <button id="horz_spec" class="horz icon-button button flex-item"><span class="button-text">horz</span></button>
+                        <button id="vert_spec" class="vert icon-button button flex-item"><span class="button-text">vert</span></button>
+                    </div>
                 </div>
-                <div class="button-group columns">
-                    <button id="spaceBetweenSpec" class="icon-button button flex-item">spacing</button>
-                    <button id="h-spacing" class="icon-button button flex-item">h spacing</button>
-                    <button id="v-spacing" class="icon-button button flex-item">v spacing</button>
+                <div class="section">
+                    <div class="section-header">Spacing:</div>
+                    <div class="button-group icon-button-group columns">
+                        <!-- <button id="spaceBetweenSpec" class="icon-button button flex-item"><span class="button-text">both</span></button> -->
+                        <button id="h-spacing" class="h-spacing icon-button button flex-item"><span class="button-text">horz</span></button>
+                        <button id="v-spacing" class="v-spacing icon-button button flex-item"><span class="button-text">vert</span></button>
+                    </div>
+                </div>
+                <div class="section">
+
+                    <div class="section-header">Edge Distance:</div>
+                    <div class="button-group icon-button-group columns">
+                        <button id="specDistFromLeft" class="specDistFromLeft button icon-button flex-item"><span class="button-text">from left</span></button>
+                        <button id="specDistFromRight" class="specDistFromRight button icon-button flex-item"><span class="button-text">from right</span></button>
+                        <button id="specDistFromTop" class="specDistFromTop button icon-button flex-item"><span class="button-text">from top</span></button>
+                        <button id="specDistFromBottom" class="specDistFromBottom button icon-button flex-item"><span class="button-text">from bottom</span></button>
+                    </div>
                 </div>
             </div>
-            <div class="section">
-                <div class="columns">
-                    <div class="form-input checkbox-input flex-item" >
-                        <label>
-                            <input name="colorSpec" id="colorSpec" class="form-val" type="checkbox">
-                            <span class="checkbox-label">add color &amp; opacity &nbsp;</span>
+
+            <div class="flex-item">
+                <div class="section">
+                    <div class="section-header">Artboard Utils:</div>
+                    <div class="button-group flex-no-wrap  flex-column">
+                        <button id="makeArtboardBackground" class="flex-item button">Add Background</button>
+                        <button id="makeAllArtboardBackgrounds" class="flex-item button">Add All Backgrounds</button>
+                        <button id="doAddArtboardNames" class="flex-item button">Add Names</button>
+                        <button id="doEditArtboardNames" class="flex-item button">Rename</button>
+                        <br />
+                        <button id="objectDetails" class="flex-item button">Object Details</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="columns">
+                <div class="form-input checkbox-input flex-item" >
+                    <label>
+                        <input name="colorSpec" id="colorSpec" class="form-val" type="checkbox">
+                        <span class="checkbox-label">add color &amp; opacity &nbsp;</span>
+                    </label>
+                </div>
+
+                <button id="getSelectedColorSpecs" class="button flex-item">colors</button>
+                <button id="divideTextFrame" class="flex-item button">Divide Textframe</button>
+            </div>
+        </div>
+
+        <div class="section section-group columns">
+            <div class="flex-item">
+                <div class="form-input text-input" >
+                    <label>units</label>
+                    <input name="units" id="units" class="form-val str-val" type="text" size='5' value="dp">
+                </div>
+                <div class="form-input text-input" >
+                    <label>font units</label>
+                    <input name="fontUnits" id="fontUnits" class="form-val str-val" type="text" size='5' value="dp">
+                </div>
+                <div class="form-input text-input" >
+                    <label>spacing</label>
+                    <input name="spacing" id="objectPadding" class="form-val num-val" type="text" size='5' value="10">
+                </div>
+                <div class="form-input text-input" >
+                    <label>base unit</label>
+                    <input name="unitBase" id="unitBase" class="form-val num-val" type="text" size='5' value="3">
+                </div>
+            </div>
+
+            <div class="flex-item text-options">
+                <div class="button-with-info">
+                    <button id="specAllText" class="button">spec all text</button>
+                    <small class="info">visible/unlocked</small>
+                </div>
+                <div id="" class="button-with-options">
+                    <button id="selectSimilarText" class="button">select similar text</button>
+                    <div class="button-options">
+                        <label class="option">
+                            <input name="by-size" id="by-size" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">size</span>
                         </label>
-                    </div>
-
-                    <button id="getSelectedColorSpecs" class="button flex-item">colors</button>
-                </div>
-            </div>
-            <div class="section">
-                <div class="button-group columns">
-                    <button id="specDistFromLeft" class="button flex-item">left edge</button>
-                    <button id="specDistFromRight" class="button flex-item">right edge</button>
-                    <button id="specDistFromTop" class="button flex-item">top edge</button>
-                    <button id="specDistFromBottom" class="button flex-item">bottom edge</button>
-                </div>
-            </div>
-
-            <div class="columns section test-group">
-                <div class="form-group column">
-                    <div class="form-input text-input" >
-                        <label>units</label>
-                        <input name="units" id="units" class="form-val str-val" type="text" size='5' value="dp">
-                    </div>
-                    <div class="form-input text-input" >
-                        <label>font units</label>
-                        <input name="fontUnits" id="fontUnits" class="form-val str-val" type="text" size='5' value="dp">
-                    </div>
-                    <div class="form-input text-input" >
-                        <label>spacing</label>
-                        <input name="spacing" id="objectPadding" class="form-val num-val" type="text" size='5' value="10">
-                    </div>
-                    <div class="form-input text-input" >
-                        <label>base unit</label>
-                        <input name="unitBase" id="unitBase" class="form-val num-val" type="text" size='5' value="3">
-                    </div>
-                </div>
-
-                <div class="form-group column">
-                    <div>
-                        <button id="specAllText" class="button">spec all text</button>
-                        <div class="info">all visible / unlocked text</div>
-                    </div>
-
-                    <div class="form-input checkbox-input border-top" >
-                        <label>
-                            <input name="guessBase" id="guessBase" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">guess base unit from artboard width</span>
+                        <label class="option">
+                            <input name="by-color" id="by-color" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">color</span>
                         </label>
+                        <label class="option">
+                            <input name="by-family" id="by-family" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">family</span>
+                        </label>
+                        <label class="option">
+                            <input name="by-style" id="by-style" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">style</span>
+                        </label>
+                        <label class="option">
+                            <input name="by-opacity" id="by-opacity" class="form-val" type="checkbox" checked="checked">
+                            <span class="checkbox-label">opacity</span>
+                        </label>
+
                     </div>
                 </div>
             </div>
-            <div id="form-inputs" class="section">
-                <div class="button-group flex-wrap">
-                    <button id="makeArtboardBackground" class="flex-item button">ABs BG</button>
-                    <button id="makeAllArtboardBackgrounds" class="flex-item button">AB BGs</button>
-                    <button id="doEditArtboardNames" class="flex-item button">AB Names</button>
-                    <button id="divideTextFrame" class="flex-item button">Divide Textframe</button>
-                </div>
-            </div>
+        </div>
 
 
-            <div class="output-panel ">
-                <div id="output">
+        <div class="form-input checkbox-input" >
+            <label>
+                <input name="guessBase" id="guessBase" class="form-val" type="checkbox" checked="checked">
+                <span class="checkbox-label">guess base unit from artboard widths</span>
+            </label>
+        </div>
+        <div class="section">
+            <input type="checkbox" id="show-scripts" class="show-scripts" checked="checked">
+            <label class="section-header toggle" for="show-scripts">Linked Scripts</label>
 
-                </div>
-                <div id="stats">
 
-                </div>
+            <div id="linked-scripts" class="button-group flex-no-wrap  flex-column linked-scripts">
 
             </div>
+        </div>
+
+            <div id="output" class="output-panel "></div>
 
             <div class="test-stuff section">
 
                 <button id="btn_reload" class="button">Reload</button>
-                <button id="colors_spec" class="button">All Colors</button>
+                <!-- <button id="colors_spec" class="button">All Colors</button> -->
                 <button id="testFunction" class="button">test</button>
             </div>
 
@@ -114,6 +160,7 @@
 
         <script src="js/libs/CSInterface.js"></script>
         <script src="js/libs/jquery-2.0.2.min.js"></script>
+        <script src="js/libs/underscore.js"></script>
         <script src="js/themeManager.js"></script>
         <script src="js/main.js"></script>
 

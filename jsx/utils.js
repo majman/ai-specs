@@ -199,17 +199,23 @@ EditTextWithLabel.prototype = {
 //////////////////////////////////////////////////////////////////
 
 function exploreObject(objectToExplore){
+
+
     var displayErrors = 1;
     var maxLines = 50;
     var bob = "";
     var disp_ar = new Array();
     //the item count object:
     var c = 0;
-    var observed = objectToExplore || prompt("What do you want to explore? i.e.;\r   app (not used before CS)\r   documents\r   activeDocument.pageItems[0]","activeDocument.selection[0]");
+    var observed = objectToExplore || activeDocument.selection[0] || prompt("What do you want to explore? i.e.;\r   app (not used before CS)\r   documents\r   activeDocument.pageItems[0]","activeDocument.selection[0]");
     //assign prompt text to actual object;
     //   a side effect of which is,
     //   if the user input is actually a line of executable code,
     //   it gets run here:
+
+
+
+    observed = observed.file;
 
     var thisObject = eval(observed);
     try {
@@ -241,7 +247,7 @@ function exploreObject(objectToExplore){
             var dispOutput = new Array("");
             var more = "";
             var myLoc = 0;
-            for (var x=0;x<dispLen;x++) {
+            for (var x=0; x < dispLen; x++) {
                 // add spacing for formatting of line numbers less that 10.
                 if(x < 9){
                     spc = "  ";
@@ -263,7 +269,7 @@ function exploreObject(objectToExplore){
                 alert("Contents of:\r"+observed+"\r------------------------\r"+dispOutput[a]+more);
             }
         }else{
-            alert("Value of:\r"+observed+"\r------------------------\r"+thisObject );
+            alert("Value of:\r"+observed+"\r-------------+----------\r"+thisObject );
         }
 
     } catch (e) {
@@ -283,3 +289,72 @@ function exploreObject(objectToExplore){
 }
 
 
+function runScriptFromFile(file){
+    var sf = file;
+
+    if(!(file instanceof File)){
+        sf = File(file);
+    }
+    if(!sf.exists){
+        alert("Sorry, it appears that this script file cannot be located at '"+decodeURI(sf.toString())+"'");
+        return;
+    }
+    sf.open('r');
+    var scriptString = sf.read().replace("#target illustrator",'');
+    sf.close();
+
+    // Thanks to: https://forums.adobe.com/thread/287506?tstart=0
+    var pathToScript = "var ScriptPanel_MyLocation = '"+sf.fsName+"';";
+    var script = "var scp ='" + bridgeTalkEncode(pathToScript+"\r"+scriptString) + "'";
+
+    script += ";\nvar scpDecoded = decodeURI( scp );\n";
+    script += "eval( scpDecoded );";
+
+    var bt = new BridgeTalk();
+    bt.target = 'illustrator';
+    bt.body = script;
+    bt.onError = function(errObj){
+        alert(errObj.body);
+    }
+    bt.send();
+}
+function bridgeTalkEncode( txt ) {
+    txt = encodeURIComponent( txt );
+    txt = txt.replace( /\r/, "%0d" );
+    txt = txt.replace( /\n/, "%0a" );
+    txt = txt.replace( /\\/, "%5c" );
+    txt = txt.replace(/'/g, "%27");
+    return txt.replace(/"/g, "%22");
+}
+
+function selectScriptFile(){
+    var fileMatch = function(f){
+        return f instanceof Folder || (f instanceof File && f.displayName.match(/(\.js$|\.jsx$)/));
+    };
+    var dataFile = File.openDialog("Choose a Script", fileMatch);
+    if(dataFile != null){
+        dataFile  = File(dataFile.fsName.replace("file://", ""));
+        runScriptFromFile(dataFile);
+    }
+}
+
+function stringify(obj) {
+    var t = typeof (obj);
+    if (t != "object" || obj === null) {
+        // simple data type
+        if (t == "string") obj = '"' + obj + '"';
+        return String(obj);
+    } else {
+        // recurse array or object
+        var n, v, json = [], arr = (obj && obj.constructor == Array);
+        for (n in obj) {
+            v = obj[n];
+            t = typeof(v);
+            if (obj.hasOwnProperty(n)) {
+                if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = stringify(v);
+                json.push((arr ? "" : '"' + n + '":') + String(v));
+            }
+        }
+        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
+    }
+}

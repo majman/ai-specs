@@ -9,7 +9,7 @@
 	</ExtensionList>
 	<ExecutionEnvironment>
 		<HostList>
-            <Host Name="ILST" Version="[18.0,18.9]" />
+            <Host Name="ILST" Version="[19.0,19.9]" />
 		</HostList>
 		<LocaleList>
 			<Locale Code="All" />

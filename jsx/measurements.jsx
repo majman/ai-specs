@@ -1,9 +1,11 @@
 #include "underscore.js";
+#include "json2.js";
 #include "utils.js";
 #include "colorInfo.js";
-#include "artboard-bg.js";
+#include "artboard-utils.js";
 #include "divide-text-frame.js";
 #include "CreateCss.js";
+#include "selectTextByProps.js";
 
 var actDoc;
 var selectedObjects;
@@ -939,32 +941,74 @@ $.doEditArtboardNames = function() {
     dispatchCEPEvent("My Custom Event", 'editArtboardNames');
     return "complete";
 }
+$.doAddArtboardNames = function() {
+    addArtboardNames();
+    dispatchCEPEvent("My Custom Event", 'addArtboardNames');
+    return "complete";
+}
 
+$.selectSimilarText = function(options) {
+    selectSimilarText(options);
+    dispatchCEPEvent("My Custom Event", 'selectSimilarText');
+    return "complete";
+}
+
+$.objectDetails = function(options) {
+    exploreObject();
+    dispatchCEPEvent("My Custom Event", 'objectDetails');
+    return "complete";
+}
 
 
 $.testFunction = function(options) {
-    var val = {"a": "foo"};
-    dispatchCEPEvent("My Custom Event", stringify(val));
-    return o;
+    try {
+        // createNewDoc();
+        // selectScriptFile();
+        // listScripts();
+    }catch (e){
+        alert(e);
+    }
+    var data = listScripts();
+    dispatchCEPEvent("My Custom Event", data);
+    return "complete";
 }
 
-function stringify(obj) {
-    var t = typeof (obj);
-    if (t != "object" || obj === null) {
-        // simple data type
-        if (t == "string") obj = '"' + obj + '"';
-        return String(obj);
-    } else {
-        // recurse array or object
-        var n, v, json = [], arr = (obj && obj.constructor == Array);
-        for (n in obj) {
-            v = obj[n];
-            t = typeof(v);
-            if (obj.hasOwnProperty(n)) {
-                if (t == "string") v = '"' + v + '"'; else if (t == "object" && v !== null) v = jQuery.stringify(v);
-                json.push((arr ? "" : '"' + n + '":') + String(v));
-            }
+$.runScriptFromFile = function(options) {
+    // alert('runScriptFromFile '+options);
+    runScriptFromFile(scriptFolderPath+'/'+options);
+    dispatchCEPEvent("My Custom Event", 'runScriptFromFile');
+    return "complete";
+}
+
+var scriptFolderPath = '~/Dropbox/SharedAdobeScripts';
+
+var listData = listScripts();
+dispatchCEPEvent("My Custom Event", listData);
+
+function listScripts(){
+    var ob = {type: 'listScripts'};
+    var str = '';
+    var folderFiles = [];
+    if(scriptFolderPath != null){
+        // scriptFolder = Folder(scriptFolder.fsName.replace('file://', "")); // is this still happening on Macs?
+        var scriptFolder = Folder(scriptFolderPath);
+        if(scriptFolder.exists){
+            str = decodeURI(scriptFolder);
+            var tempFolderFiles = scriptFolder.getFiles(function(f){
+
+                return f instanceof Folder || f instanceof File && f.name.match(/(\.js$|\.jsx$)/);
+            });
+            _.each(tempFolderFiles, function(ff){
+                // str += ' '+ff.name;
+                if(ff instanceof File == true){
+                    var n = decodeURI(ff.name);
+                    folderFiles.push(n);
+                }
+            });
         }
-        return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
     }
+    ob.str = str;
+    ob.folderFiles = folderFiles;
+    ob = JSON.stringify(ob);
+    return ob;
 }

@@ -25,20 +25,46 @@
     function appendMessage(str){
         // var m = $("#output").html();
         var m = 'Last Operation:';
-        $("#output").text(m + "\n" + str);
+        $("#output").html(m + "<br>" + str);
     }
 
     function init() {
         csInterface.addEventListener("My Custom Event", function(e) {
             var dataType = typeof(e.data);
-            var str;
+            var str = '';
             if(dataType == "object"){
-                str = JSON.stringify(e.data);
+                if(e.data.type == 'listScripts'){
+                    addScripts(e.data);
+                }else {
+                    str = JSON.stringify(e.data);
+                }
             }else {
                 str = e.data;
             }
             appendMessage(str)
         });
+
+        function addScripts(data){
+            var folderFiles = data.folderFiles;
+            var html = ''
+            //
+
+            if(typeof(folderFiles) == "string"){
+                folderFiles = JSON.parse(folderFiles);
+            }
+            _.each(folderFiles, function(ff, i){
+                html += '<button id="linkedScript-'+i+'" class="flex-item button linked-button" data-fileName="'+ff+'">'+ff.replace(/(\.js$|\.jsx$)/, '')+'</button>';
+            });
+            $("#linked-scripts").html(html);
+
+            $('.linked-button').on('click', function(e){
+                var fname = $(this).attr('data-fileName');
+
+                csInterface.evalScript("$.runScriptFromFile("+$.stringify(fname)+")");
+                return false;
+            })
+        }
+
         themeManager.init();
         loadJSXFile("/jsx/measurements.jsx");
 
@@ -156,14 +182,30 @@
         $('#doEditArtboardNames').on('click', function(){
             csInterface.evalScript("$.doEditArtboardNames()");
         });
+        $('#doAddArtboardNames').on('click', function(){
+            csInterface.evalScript("$.doAddArtboardNames()");
+        });
 
+        $('#selectSimilarText').on('click', function(){
+            var o = getOptions();
+            var stringified = $.stringify(o);
+            csInterface.evalScript("$.selectSimilarText("+stringified+")");
+        });
+
+
+        $('#objectDetails').on('click', function(){
+            csInterface.evalScript("$.objectDetails()");
+        });
 
         $('#testFunction').on('click', function(){
             // var o = getOptions();
             // var stringified = $.stringify(o);
             // csInterface.evalScript("$.testFunction()");
-            var o = getOptions();
-            addMessage($.stringify(o));
+            // var o = getOptions();
+            // addMessage($.stringify(o));
+
+            csInterface.evalScript("$.testFunction()");
+
         });
     }
     init();

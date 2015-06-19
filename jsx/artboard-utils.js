@@ -89,7 +89,52 @@ function allArtboardBackgrounds(){
     // alert('min: ('+minArtboardX+', '+minArtboardY+'); max: ('+maxArtboardX+', '+maxArtboardY+')');
 }
 
+function addArtboardNames(){
+    updateArtboardInfo();
+    getSpecLayer();
 
+    try {
+        var abNamesGroup;
+        try {
+            abNamesGroup = activeDocument.groupItems.getByName('Artboard Names');
+        } catch(e) {
+            abNamesGroup = specLayer.groupItems.add();
+            abNamesGroup.name = 'Artboard Names';
+        }
+        for (var abNumber = 0; abNumber < activeDocument.artboards.length; abNumber++) {
+            // activeDocument.artboards.setActiveArtboardIndex(abNumber);
+            var ab =  activeDocument.artboards[abNumber];
+            var n = ab.name;
+            var abTF;
+            try {
+                abTF = abNamesGroup.textFrames.getByName('Artboard '+abNumber);
+            } catch(e) {
+
+                abTF = abNamesGroup.textFrames.add();
+                abTF.name = 'Artboard '+abNumber;
+                var abRect =  ab.artboardRect;
+                var abX =  abRect[0];
+                var abY = abRect[1];
+
+                setSpecStyles(abTF, white);
+                abTF.top = abY + abTF.height * 2;
+                abTF.left = abX;
+            }
+            // var tf = abNamesGroup.textFrames.add();
+            abTF.contents = toTitleCase(n);
+        }
+    } catch(e){
+        alert(e);
+    }
+}
+function toTitleCase(string) {
+    // \u00C0-\u00ff for a happy Latin-1
+    return string.toLowerCase().replace(/_/g, ' ').replace(/\b([a-z\u00C0-\u00ff])/g, function (_, initial) {
+        return initial.toUpperCase();
+    }).replace(/(\s(?:de|a|o|e|da|do|em|ou|[\u00C0-\u00ff]))\b/ig, function (_, match) {
+        return match.toLowerCase();
+    });
+}
 
 function createBackgroundLayer(){
     var actDoc = app.activeDocument;
@@ -105,7 +150,7 @@ function createBackgroundLayer(){
     return bgLayer;
 }
 
-// artboardBackground();
+
 
 function renameArtboardsFromLayers(){
     if (app.documents.length == 0) {
@@ -196,3 +241,29 @@ function editArtboardNames(){
     showDialogue(renameDlg, onRenameDialog);
 }
 
+function createNewDoc(){
+    var activeIndex = doc.artboards.getActiveArtboardIndex();
+    var ab =  doc.artboards[activeIndex];
+    var abRect =  ab.artboardRect;
+    var abX =  abRect[0];
+    var abY = abRect[1];
+    var abW =  Math.round(abRect[2] - abX);
+    var abH = abY - abRect[3];
+
+    var abObjects = doc.selectObjectsOnActiveArtboard();
+    app.copy();
+
+    var newDoc = app.documents.add(DocumentColorSpace.RGB, abW, abH);
+    newDoc.activate();
+    app.paste();
+
+    // var doc = app.activeDocument;
+    // var newDoc = app.documents.add();
+    // var app:Application = Illustrator.app;
+
+    // app.documents.addDocument('',new DocumentPreset(),true);
+}
+function testFunction(){
+
+    createNewDoc();
+}

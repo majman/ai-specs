@@ -41,3 +41,4 @@ ArtboardInfo.prototype.contains = function(component){
     return aMinX <= cMaxX && cMinX <= aMaxX &&
             aMinY <= cMaxY && cMinY <= aMaxY;
 }
+
