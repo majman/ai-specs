@@ -136,7 +136,7 @@ function showDialogue(opts, onOK){
     _.each(opts.groups, function(gr){
         var t = gr.title || undefined;
         if(gr.type == 'edittext'){
-            var et = new EditTextWithLabel(win, gr.label, gr.default);
+            var et = new EditTextWithLabel(win, gr.label, gr['default']);
             win._groups['_'+gr.label] = et;
         }
     });

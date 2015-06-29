@@ -958,6 +958,11 @@ $.objectDetails = function(options) {
     dispatchCEPEvent("My Custom Event", 'objectDetails');
     return "complete";
 }
+$.artboardsToLayers = function(options) {
+    artboardsToLayers();
+    dispatchCEPEvent("My Custom Event", 'artboardsToLayers');
+    return "complete";
+}
 
 
 $.testFunction = function(options) {

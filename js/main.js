@@ -185,6 +185,11 @@
         $('#doAddArtboardNames').on('click', function(){
             csInterface.evalScript("$.doAddArtboardNames()");
         });
+        $('#artboardsToLayers').on('click', function(){
+            csInterface.evalScript("$.artboardsToLayers()");
+        });
+
+
 
         $('#selectSimilarText').on('click', function(){
             var o = getOptions();

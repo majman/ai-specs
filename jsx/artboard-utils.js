@@ -267,3 +267,46 @@ function testFunction(){
 
     createNewDoc();
 }
+
+
+function artboardsToLayers(){
+    updateArtboardInfo();
+    var abNames = [];
+    try {
+        for (var i = 0; i < activeDocument.artboards.length; i++) {
+            var ab =  activeDocument.artboards[i];
+            var abName = ab.name;
+            if(_.contains(abNames, abName)){
+                abName += '-'+i
+            }
+            abNames[i] = abName;
+            if(abName.charAt(0) == '-'){
+                continue;
+            }
+
+            var abLayer;
+            try {
+                abLayer = activeDocument.layers.getByName(abName);
+            }catch(e) {
+                abLayer = activeDocument.layers.add();
+                abLayer.name = abName;
+            }
+
+            activeDocument.artboards.setActiveArtboardIndex(i);
+            activeDocument.selection = null;
+            activeDocument.selectObjectsOnActiveArtboard();
+            var abObjects = activeDocument.selection;
+            var abObjectCount = abObjects.length;
+            try {
+                for (var j = 0; j < abObjectCount; j++) {
+                    var pgItem = abObjects[j];
+                    pgItem.move(abLayer, ElementPlacement.PLACEATEND);
+                }
+            }catch(e){
+                alert(e);
+            }
+        }
+    } catch(e){
+        alert(e);
+    }
+}
