@@ -358,3 +358,45 @@ function stringify(obj) {
         return (arr ? "[" : "{") + String(json) + (arr ? "]" : "}");
     }
 }
+
+var dupCount = 0;
+
+var openDocument = function(data) {
+    var gi = app.activeDocument.groupItems.getByName('_songitem');
+    var h = gi.height;
+    try {
+        // app.open(new File(path));
+
+        // for (var i=1; i < alterObjectArray.length; i++) {
+
+
+            // var newGroup = app.activeDocument.groupItems.add();
+            var ng = gi.duplicate();
+            ng.name = data.songname;
+
+            var pi = ng.pageItems;
+            var albumart = pi.getByName('_albumart');
+            var songname = pi.getByName('_songname');
+            var artistname = pi.getByName('_artistname');
+
+            songname.contents = data.songname;
+            artistname.contents = data.artistname;
+
+            var placedItem = ng.placedItems.add()
+            placedItem.file = new File(data.path);
+
+            placedItem.width = albumart.width;
+            placedItem.height = albumart.height;
+            placedItem.top = albumart.top;
+            placedItem.left = albumart.left;
+
+
+            ng.top -= (h + dupCount*h);
+            dupCount ++;
+
+        // }
+    }catch(e){
+        alert(e);
+    }
+
+}

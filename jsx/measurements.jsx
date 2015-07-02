@@ -967,14 +967,14 @@ $.artboardsToLayers = function(options) {
 
 $.testFunction = function(options) {
     try {
-        // createNewDoc();
+        createNewDoc();
         // selectScriptFile();
         // listScripts();
     }catch (e){
         alert(e);
     }
-    var data = listScripts();
-    dispatchCEPEvent("My Custom Event", data);
+
+    dispatchCEPEvent("My Custom Event", 'test');
     return "complete";
 }
 
@@ -984,6 +984,12 @@ $.runScriptFromFile = function(options) {
     dispatchCEPEvent("My Custom Event", 'runScriptFromFile');
     return "complete";
 }
+
+$.openDocument = function(data) {
+    // alert(data);
+    openDocument(data);
+}
+
 
 var scriptFolderPath = '~/Dropbox/SharedAdobeScripts';
 

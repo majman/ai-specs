@@ -242,26 +242,78 @@ function editArtboardNames(){
 }
 
 function createNewDoc(){
-    var activeIndex = doc.artboards.getActiveArtboardIndex();
-    var ab =  doc.artboards[activeIndex];
+    var sourceDoc = app.activeDocument;
+    var activeIndex = sourceDoc.artboards.getActiveArtboardIndex();
+    var ab =  sourceDoc.artboards[activeIndex];
+    var abName = ab.name;
     var abRect =  ab.artboardRect;
     var abX =  abRect[0];
     var abY = abRect[1];
-    var abW =  Math.round(abRect[2] - abX);
-    var abH = abY - abRect[3];
+    var abW = abRect[2] - abRect[0];
+    var abH = -(abRect[3] - abRect[1]);
 
-    var abObjects = doc.selectObjectsOnActiveArtboard();
-    app.copy();
+
+    sourceDoc.selectObjectsOnActiveArtboard();
+    sel = sourceDoc.selection; // get selection
+
+    var sourceDocOrigin = sourceDoc.rulerOrigin;
 
     var newDoc = app.documents.add(DocumentColorSpace.RGB, abW, abH);
-    newDoc.activate();
-    app.paste();
+    newDoc.rulerOrigin = sourceDocOrigin;
+    // var newAb = newDoc.artboards[0];
+    // newAb.artboardRect = abRect;
 
-    // var doc = app.activeDocument;
-    // var newDoc = app.documents.add();
-    // var app:Application = Illustrator.app;
+    // sourceDoc.activate();
 
-    // app.documents.addDocument('',new DocumentPreset(),true);
+
+    // ABsNames[i] = ABs[i].name;
+    moveObjects(sel, newDoc, abX, abY); // move selection
+
+    // newDoc.activate();
+
+    var newAB = newDoc.artboards.add(abRect);
+    newAB.name = abName;
+
+
+}
+
+//  -1500, 1996
+//  src: -1455.68554360945, 1566.76451241754
+//  dst: -705.68554360945, -429.235487582462
+
+
+
+// move selected objects (sel) to destination document
+function moveObjects(sel, destDoc, newX, newY) {
+    var hasDocCoords = app.coordinateSystem == CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
+    var log = newX + ', '+ newY + "\n";
+    for (k=0; k<sel.length; k++) {
+        // duplicate items to the same layer in dest document, give both documents have the same layer structure
+        var layerName = sel[k].layer.name;
+        var abLayer;
+        try {
+            abLayer = destDoc.layers.getByName(layerName);
+        }catch(e) {
+            abLayer = destDoc.layers.add();
+            abLayer.name = layerName;
+        }
+        try {
+            var newItem = sel[k].duplicate(destDoc.layers[layerName],ElementPlacement.PLACEATEND);
+
+            var pos = hasDocCoords ? destDoc.convertCoordinate (newItem.position, CoordinateSystem.DOCUMENTCOORDINATESYSTEM, CoordinateSystem.ARTBOARDCOORDINATESYSTEM) : newItem.position;
+            var pgLeft = pos[0] + newX;
+            var pgTop = pos[1] - newY;
+            newItem.position = [pgLeft, pgTop];
+
+            if(k == 0){
+                log += 'src: ' + sel[k].position[0] + ", " + sel[k].position[1] + "\n";
+                log += 'dst: ' + pgLeft + ", " + pgTop + "\n";
+            }
+        }catch(e){
+
+        }
+    }
+    alert(log);
 }
 function testFunction(){
 

@@ -101,6 +101,12 @@ var themeManager = (function () {
         addRule(styleId, "button:active", "background-color:" + "#" + eltBgdColor);
         addRule(styleId, "button", "border-color: " + "#" + borderColor);
 
+        addRule(styleId, "select", "background-image:" + "-webkit-gradient(linear, left top, left bottom, from(#"+gradTop+"), to(#"+gradBottom+"))");
+        addRule(styleId, "option", "background-color:" + "#" + bgdColor);
+        addRule(styleId, "option", "color:" + "#" + fontColor);
+
+
+
         addRule(styleId, "input[type='checkbox']", "background-image:" + "-webkit-gradient(linear, left top, left bottom, from(#"+gradTop+"), to(#"+gradBottom+"))");
 
 
