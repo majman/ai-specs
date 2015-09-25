@@ -985,9 +985,9 @@ $.runScriptFromFile = function(options) {
     return "complete";
 }
 
-$.openDocument = function(data) {
+$.addRemoteItems = function(data) {
     // alert(data);
-    openDocument(data);
+    addRemoteItems(data);
 }
 
 

@@ -361,7 +361,7 @@ function stringify(obj) {
 
 var dupCount = 0;
 
-var openDocument = function(data) {
+var addRemoteItems = function(data) {
     var gi = app.activeDocument.groupItems.getByName('_songitem');
     var h = gi.height;
     try {
@@ -380,16 +380,24 @@ var openDocument = function(data) {
             var artistname = pi.getByName('_artistname');
 
             songname.contents = data.songname;
+            songname.name = data.songname;
             artistname.contents = data.artistname;
+            artistname.name = data.artistname;
 
             var placedItem = ng.placedItems.add()
             placedItem.file = new File(data.path);
-
+            placedItem.name = data.albumname;
             placedItem.width = albumart.width;
             placedItem.height = albumart.height;
             placedItem.top = albumart.top;
             placedItem.left = albumart.left;
+            placedItem.embed();
 
+            // var rasterLength = app.activeDocument.rasterItems.length - 1;
+            // var embedded = app.activeDocument.rasterItems[rasterLength];
+            var embedded = pi.getByName(data.albumname);
+
+            var symb = app.activeDocument.symbols.add(embedded);
 
             ng.top -= (h + dupCount*h);
             dupCount ++;

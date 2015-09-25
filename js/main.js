@@ -1,7 +1,7 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global $, window, location, CSInterface, SystemPath, themeManager*/
 
-(function () {
+
 
 
     var csInterface = new CSInterface();
@@ -222,8 +222,16 @@
         };
 
         var createTempFolder = function() {
-          var tempFolderName = 'com.adobe.rhapsody.extension/';
-          var tempFolder = '/tmp/' + tempFolderName;
+            var tempFolderName = 'remoteImages/';
+            var tempFolder;
+            // if(relativePath != undefined){
+            //     tempFolder = relativePath + '/' + tempFolderName;
+            // }else {
+            //     tempFolder = '/tmp/' + tempFolderName;
+            // }
+            tempFolder = '/tmp/' + tempFolderName;
+
+
           if (window.navigator.platform.toLowerCase().indexOf('win') > -1) {
             tempFolder = csInterface.getSystemPath(SystemPath.USER_DATA) + '/../Local/Temp/' + tempFolderName;
           }
@@ -257,8 +265,7 @@
                     }
                     var stringified = $.stringify(data);
                     // alert('downloadAndOpenInIllustrator '+ data.songName);
-                    csInterface.evalScript("$.openDocument("+stringified+")");
-
+                    csInterface.evalScript("$.addRemoteItems("+stringified+")");
                 }
             };
             xhr.send();
@@ -273,28 +280,47 @@
         // 'image200': constants.IMAGE_SERVER + id + '/200x200.jpeg',
         // 'image300': constants.IMAGE_SERVER + id + '/300x300.jpeg',
         // 'image600': constants.IMAGE_SERVER + id + '/600x600.jpeg',
-        var searchRhapsody = function(query) {
-          var url = 'http://napi-gateway-stage.rhapsody.com/v1/members/A15830BF51EC0152E0430A9603320152/favorites?apikey=2a0n4Uj1CAmMpGa5GyRqym7Hjm7bLMji&limit=5&offset=0'
+
+        var searchRhapsody = function(user, count, size, offset) {
+            var url = 'http://napi-gateway-stage.rhapsody.com/v1/members/'+user+'/favorites?apikey=2a0n4Uj1CAmMpGa5GyRqym7Hjm7bLMji&limit='+count+'&offset='+offset;
 
 
-          $.getJSON(url, function (response) {
-            _.each(response, function(song){
-                var id = song.id;
-                var img = IMAGE_SERVER + id + '/120x120.jpeg';
-                addThumbToContainer(img, song);
+            $.getJSON(url, function (response) {
+                _.each(response, function(song){
+                    var id = song.id;
+                    var img = IMAGE_SERVER + id + '/'+size+'.jpeg';
+                    addThumbToContainer(img, song);
+                });
             });
-          });
         };
 
 
 
         $('#get-remote').on('click', function(){
-          searchRhapsody();
+
+            var count = $('#remoteCount').val();
+            var user = $('#rhap-users').val();
+            var size = $('#rhap-image-size').val();
+            var offset = $('#rhap-image-offset').val();
+            searchRhapsody(user, Number(count), size, offset);
         });
 
+        var optionHtml = '';
+        _.each(rhapUsers, function(user, i){
+            optionHtml += '<option value="'+user.userGuid+'">'+user.nick+'</option>';
+
+        });
+        $('#rhap-users').append(optionHtml)
     }
-    init();
-}());
+
+
+    var relativePath;
+    csInterface.evalScript("app.activeDocument.path;", function(cbResult){
+        relativePath = cbResult;
+    });
+
+    // alert(app.activeDocument.path);
+
 
 
 jQuery.extend({
@@ -328,58 +354,59 @@ var rhapUsers = [
 
     {
         'userGuid': 'A15830BF51EC0152E0430A9603320152',
-        'nick': 'Marshall Jones'
+        'nick': 'Marshall J'
     },
     {
         'userGuid': 'FBD985D9E38490A1E040960A39030E95',
-        'nick': 'Jason Culler'
+        'nick': 'Jason C'
     },
     {
         'userGuid': '2496EA7CD48590BAE043C0A87FE490BA',
-        'nick': 'Dan Kantor'
+        'nick': 'Dan K'
     },
     {
         'userGuid': 'FBDB6A665BC671E7E040960A39030B45',
-        'nick': 'Kyle Klube'
+        'nick': 'Kyle K'
     },
     {
         'userGuid': 'E7735EE6C8DF5026E033C0A87F165026',
-        'nick': 'Brian Ringer'
+        'nick': 'Brian R'
     },
     {
         'userGuid': '0EFB12C4992B50A0E043C0A87FE450A0',
-        'nick': 'Ken Murphy'
+        'nick': 'Ken M'
     },
     {
         'userGuid': '36CA3759E2E3603CE043C0A87FE4603C',
-        'nick': 'Daniel Shumate'
+        'nick': 'Daniel S'
     },
     {
         'userGuid': '035AFC9135191B11E050960A38034B3C',
-        'nick': 'Keenan Popwell'
+        'nick': 'Keenan P'
     },
     {
         'userGuid': '05E57F6DC9F080DAE043C0A87FE480DA',
-        'nick': 'Peter Hilgendorf'
+        'nick': 'Peter H'
     },
     {
         'userGuid': 'E7735EE796E35026E033C0A87F165026',
-        'nick': 'Paul Riley'
+        'nick': 'Paul R'
     },
     {
         'userGuid': 'FFBF69CCBC5FD00CE033C0A87F15D00C',
-        'nick': 'Kim Liggins'
+        'nick': 'Kim L'
     },
     {
         'userGuid': 'C13D86BA0E5FDFDDE040960A38033AC1',
-        'nick': 'Paul Springer'
+        'nick': 'Paul S'
     },
     {
         'userGuid': '0B75CEFAFC5640BCE043C0A87FE440BC',
-        'nick': 'David Hose'
+        'nick': 'David H'
     },
     {
         'userGuid': "13C759546163F5FFE050960A38035F10",
-        'nick': 'Nick Soman'
+        'nick': 'Nick S'
     }
 ];
+init();
