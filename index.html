@@ -7,190 +7,202 @@
 </head>
 
 <body>
-    <div id="content">
-        <div id="main">
+    <div id="content" class="content">
+        <div id="main" class="main">
+            <div>
+                <input type="checkbox" id="dimensions-artboards" class="toggle-input dimensions-artboards" checked="checked">
+                <label class="section-header toggle" for="dimensions-artboards">Dimensions / Artboards</label>
+                <div class="section section-group columns toggle-content">
+                    <div class="flex-item">
+                        <div class="section">
+                            <div class="section-header">Dimensions:</div>
+                            <div class="button-group icon-button-group columns">
+                                <button id="auto_spec" class="both icon-button button flex-item"><span class="button-text">both</span></button>
+                                <button id="horz_spec" class="horz icon-button button flex-item"><span class="button-text">horz</span></button>
+                                <button id="vert_spec" class="vert icon-button button flex-item"><span class="button-text">vert</span></button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="section-header">Spacing:</div>
+                            <div class="button-group icon-button-group columns">
+                                <!-- <button id="spaceBetweenSpec" class="icon-button button flex-item"><span class="button-text">both</span></button> -->
+                                <button id="h-spacing" class="h-spacing icon-button button flex-item"><span class="button-text">horz</span></button>
+                                <button id="v-spacing" class="v-spacing icon-button button flex-item"><span class="button-text">vert</span></button>
+                            </div>
+                        </div>
+                        <div class="section">
 
-        <div class="section section-group columns">
-            <div class="flex-item">
-                <div class="section">
-                    <div class="section-header">Dimensions:</div>
-                    <div class="button-group icon-button-group columns">
-                        <button id="auto_spec" class="both icon-button button flex-item"><span class="button-text">both</span></button>
-                        <button id="horz_spec" class="horz icon-button button flex-item"><span class="button-text">horz</span></button>
-                        <button id="vert_spec" class="vert icon-button button flex-item"><span class="button-text">vert</span></button>
+                            <div class="section-header">Edge Distance:</div>
+                            <div class="button-group icon-button-group columns">
+                                <button id="specDistFromLeft" class="specDistFromLeft button icon-button flex-item"><span class="button-text">from left</span></button>
+                                <button id="specDistFromRight" class="specDistFromRight button icon-button flex-item"><span class="button-text">from right</span></button>
+                                <button id="specDistFromTop" class="specDistFromTop button icon-button flex-item"><span class="button-text">from top</span></button>
+                                <button id="specDistFromBottom" class="specDistFromBottom button icon-button flex-item"><span class="button-text">from bottom</span></button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="section">
-                    <div class="section-header">Spacing:</div>
-                    <div class="button-group icon-button-group columns">
-                        <!-- <button id="spaceBetweenSpec" class="icon-button button flex-item"><span class="button-text">both</span></button> -->
-                        <button id="h-spacing" class="h-spacing icon-button button flex-item"><span class="button-text">horz</span></button>
-                        <button id="v-spacing" class="v-spacing icon-button button flex-item"><span class="button-text">vert</span></button>
-                    </div>
-                </div>
-                <div class="section">
 
-                    <div class="section-header">Edge Distance:</div>
-                    <div class="button-group icon-button-group columns">
-                        <button id="specDistFromLeft" class="specDistFromLeft button icon-button flex-item"><span class="button-text">from left</span></button>
-                        <button id="specDistFromRight" class="specDistFromRight button icon-button flex-item"><span class="button-text">from right</span></button>
-                        <button id="specDistFromTop" class="specDistFromTop button icon-button flex-item"><span class="button-text">from top</span></button>
-                        <button id="specDistFromBottom" class="specDistFromBottom button icon-button flex-item"><span class="button-text">from bottom</span></button>
+                    <div class="flex-item">
+                        <div class="section">
+                            <div class="section-header">Artboard Utils:</div>
+                            <div class="button-group flex-no-wrap  flex-column">
+                                <button id="makeArtboardBackground" class="flex-item button">Add Background</button>
+                                <button id="makeAllArtboardBackgrounds" class="flex-item button">Add All Backgrounds</button>
+                                <button id="doAddArtboardNames" class="flex-item button">Add Names</button>
+                                <button id="doEditArtboardNames" class="flex-item button">Rename</button>
+                                <button id="artboardsToLayers" class="flex-item button">Artboards to Layers</button>
+                                <br />
+                                <button id="objectDetails" class="flex-item button">Object Details</button>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex-item">
-                <div class="section">
-                    <div class="section-header">Artboard Utils:</div>
-                    <div class="button-group flex-no-wrap  flex-column">
-                        <button id="makeArtboardBackground" class="flex-item button">Add Background</button>
-                        <button id="makeAllArtboardBackgrounds" class="flex-item button">Add All Backgrounds</button>
-                        <button id="doAddArtboardNames" class="flex-item button">Add Names</button>
-                        <button id="doEditArtboardNames" class="flex-item button">Rename</button>
-                        <button id="artboardsToLayers" class="flex-item button">Artboards to Layers</button>
-                        <br />
-                        <button id="objectDetails" class="flex-item button">Object Details</button>
+            <div>
+                <input type="checkbox" id="units-misc" class="toggle-input units-misc" checked="checked">
+                <label class="section-header toggle" for="units-misc">Units / Text</label>
+                <div class="toggle-content">
+                    <div class="section">
+                        <div class="columns">
+                            <div class="form-input checkbox-input flex-item" >
+                                <label>
+                                    <input name="colorSpec" id="colorSpec" class="form-val" type="checkbox">
+                                    <span class="checkbox-label">add color &amp; opacity &nbsp;</span>
+                                </label>
+                            </div>
 
+                            <button id="getSelectedColorSpecs" class="button flex-item">colors</button>
+
+                        </div>
+                    </div>
+                    <div class="section section-group columns">
+                        <div class="flex-item">
+                            <div class="form-input text-input" >
+                                <label>units</label>
+                                <input name="units" id="units" class="form-val str-val" type="text" size='5' value="dp">
+                            </div>
+                            <div class="form-input text-input" >
+                                <label>font units</label>
+                                <input name="fontUnits" id="fontUnits" class="form-val str-val" type="text" size='5' value="dp">
+                            </div>
+                            <div class="form-input text-input" >
+                                <label>spacing</label>
+                                <input name="spacing" id="objectPadding" class="form-val num-val" type="text" size='5' value="10">
+                            </div>
+                            <div class="form-input text-input" >
+                                <label>base unit</label>
+                                <input name="unitBase" id="unitBase" class="form-val num-val" type="text" size='5' value="3">
+                            </div>
+                            <div class="form-input checkbox-input" >
+                                <label>
+                                    <input name="guessBase" id="guessBase" class="form-val" type="checkbox" checked="checked">
+                                    <span class="checkbox-label">guess base unit</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex-item text-options">
+                            <div class="button-with-info">
+                                <button id="specAllText" class="button">spec all text</button>
+                                <small class="info">visible/unlocked</small>
+                            </div>
+                            <div class="button-with-info">
+                                <button id="divideTextFrame" class="flex-item button">Divide Textframe</button>
+                            </div>
+                            <div class="button-with-options">
+                                <button id="selectSimilarText" class="button">select similar text</button>
+                                <div class="button-options">
+                                    <label class="option">
+                                        <input name="by-size" id="by-size" class="form-val" type="checkbox" checked="checked">
+                                        <span class="checkbox-label">size</span>
+                                    </label>
+                                    <label class="option">
+                                        <input name="by-color" id="by-color" class="form-val" type="checkbox" checked="checked">
+                                        <span class="checkbox-label">color</span>
+                                    </label>
+                                    <label class="option">
+                                        <input name="by-family" id="by-family" class="form-val" type="checkbox" checked="checked">
+                                        <span class="checkbox-label">family</span>
+                                    </label>
+                                    <label class="option">
+                                        <input name="by-style" id="by-style" class="form-val" type="checkbox" checked="checked">
+                                        <span class="checkbox-label">style</span>
+                                    </label>
+                                    <label class="option">
+                                        <input name="by-opacity" id="by-opacity" class="form-val" type="checkbox" checked="checked">
+                                        <span class="checkbox-label">opacity</span>
+                                    </label>
+
+                                </div>
+                            </div>
+                            <div id="rhap-favorites" class="button-with-options hide">
+                                <button id="get-remote" class="button">Build Song Rows</button>
+                                <div class="option" >
+                                    <label>count</label>
+                                    <input name="remoteCount" id="remoteCount" class="form-val num-val" type="text" size='2' value="5">
+                                </div>
+                                <div class="option" >
+                                    <label>offset</label>
+                                    <input name="rhap-image-offset" id="rhap-image-offset" class="form-val num-val" type="text" size='2' value="0">
+                                </div>
+                                <div class="option select-option">
+                                    <select id="rhap-users" name="rhap-users">
+                                    </select>
+                                </div>
+                                <div class="option select-option">
+                                    <select id="rhap-image-size" name="rhap-image-size">
+                                        <option value="120x120">120x120</option>
+                                        <option value="200x200">200x200</option>
+                                        <option value="300x300">300x300</option>
+                                        <option value="600x600">600x600</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="section">
-            <div class="columns">
-                <div class="form-input checkbox-input flex-item" >
-                    <label>
-                        <input name="colorSpec" id="colorSpec" class="form-val" type="checkbox">
-                        <span class="checkbox-label">add color &amp; opacity &nbsp;</span>
-                    </label>
-                </div>
-
-                <button id="getSelectedColorSpecs" class="button flex-item">colors</button>
-                <button id="divideTextFrame" class="flex-item button">Divide Textframe</button>
-            </div>
-        </div>
-
-        <div class="section section-group columns">
-            <div class="flex-item">
-                <div class="form-input text-input" >
-                    <label>units</label>
-                    <input name="units" id="units" class="form-val str-val" type="text" size='5' value="dp">
-                </div>
-                <div class="form-input text-input" >
-                    <label>font units</label>
-                    <input name="fontUnits" id="fontUnits" class="form-val str-val" type="text" size='5' value="dp">
-                </div>
-                <div class="form-input text-input" >
-                    <label>spacing</label>
-                    <input name="spacing" id="objectPadding" class="form-val num-val" type="text" size='5' value="10">
-                </div>
-                <div class="form-input text-input" >
-                    <label>base unit</label>
-                    <input name="unitBase" id="unitBase" class="form-val num-val" type="text" size='5' value="3">
+            <div>
+                <input type="checkbox" id="show-live-input" class="toggle-input show-live-input" checked="checked">
+                <label class="section-header toggle" for="show-live-input">Live Input</label>
+                <div class="section live-input-section toggle-content">
+                    <div class="section-editor"><pre id="editor">// js input</pre></div>
+                    <button id="run-input" class="button">run</button>
                 </div>
             </div>
 
-            <div class="flex-item text-options">
-                <div class="button-with-info">
-                    <button id="specAllText" class="button">spec all text</button>
-                    <small class="info">visible/unlocked</small>
-                </div>
-                <div id="" class="button-with-options">
-                    <button id="selectSimilarText" class="button">select similar text</button>
-                    <div class="button-options">
-                        <label class="option">
-                            <input name="by-size" id="by-size" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">size</span>
-                        </label>
-                        <label class="option">
-                            <input name="by-color" id="by-color" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">color</span>
-                        </label>
-                        <label class="option">
-                            <input name="by-family" id="by-family" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">family</span>
-                        </label>
-                        <label class="option">
-                            <input name="by-style" id="by-style" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">style</span>
-                        </label>
-                        <label class="option">
-                            <input name="by-opacity" id="by-opacity" class="form-val" type="checkbox" checked="checked">
-                            <span class="checkbox-label">opacity</span>
-                        </label>
-
+            <div>
+                <input type="checkbox" id="show-scripts" class="toggle-input show-scripts" checked="checked">
+                <label class="section-header toggle" for="show-scripts">Linked Scripts</label>
+                <div class="section toggle-content">
+                    <div id="linked-scripts" class="button-group flex-no-wrap flex-column linked-scripts toggle-content">
                     </div>
-                </div>
-                 <div id="rhap-favorites" class="button-with-options">
-                    <button id="get-remote" class="button">Build Song Rows</button>
-                    <div class="option" >
-                        <label>count</label>
-                        <input name="remoteCount" id="remoteCount" class="form-val num-val" type="text" size='2' value="5">
-                    </div>
-                    <div class="option" >
-                        <label>offset</label>
-                        <input name="rhap-image-offset" id="rhap-image-offset" class="form-val num-val" type="text" size='2' value="0">
-                    </div>
-                    <div class="option select-option">
-                        <select id="rhap-users" name="rhap-users">
-                        </select>
-                    </div>
-                    <div class="option select-option">
-                        <select id="rhap-image-size" name="rhap-image-size">
-                            <option value="120x120">120x120</option>
-                            <option value="200x200">200x200</option>
-                            <option value="300x300">300x300</option>
-                            <option value="600x600">600x600</option>
-                        </select>
-                    </div>
-
-
                 </div>
             </div>
-        </div>
 
 
-        <div class="form-input checkbox-input" >
-            <label>
-                <input name="guessBase" id="guessBase" class="form-val" type="checkbox" checked="checked">
-                <span class="checkbox-label">guess base unit from artboard widths</span>
-            </label>
-        </div>
-        <div class="section">
-            <input type="checkbox" id="show-scripts" class="show-scripts" checked="checked">
-            <label class="section-header toggle" for="show-scripts">Linked Scripts</label>
-
-
-            <div id="linked-scripts" class="button-group flex-no-wrap  flex-column linked-scripts">
-
-            </div>
-        </div>
 
             <div id="output" class="output-panel "></div>
-
-            <div class="test-stuff section">
-
-                <button id="btn_reload" class="button">Reload</button>
-                <!-- <button id="colors_spec" class="button">All Colors</button> -->
-                <button id="testFunction" class="button">test</button>
-
-            </div>
-
         </div>
 
-
-
-
+        <div class="test-stuff fixed-bottom">
+            <button id="btn_reload" class="button">Reload</button>
+            <!-- <button id="colors_spec" class="button">All Colors</button> -->
+            <button id="testFunction" class="button">test</button>
+        </div>
 
     </div>
 
-        <script src="js/libs/CSInterface.js"></script>
-        <script src="js/libs/jquery-2.0.2.min.js"></script>
-        <script src="js/libs/underscore.js"></script>
-        <script src="js/themeManager.js"></script>
-        <script src="js/main.js"></script>
-        <script src="js/remote-assets.js"></script>
+    <script src="js/libs/CSInterface.js"></script>
+    <script src="js/libs/jquery-2.0.2.min.js"></script>
+    <script src="js/libs/underscore.js"></script>
+    <script src="js/themeManager.js"></script>
+    <script src="js/libs/ace.js"></script>
+    <script src="js/main.js"></script>
+
 
 
 

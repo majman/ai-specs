@@ -1,6 +1,7 @@
-var doc = app.activeDocument;
+var doc;
 
 function bigArtboardBackground(){
+    doc = app.activeDocument;
     var minArtboardX = 0;
     var maxArtboardX = 0;
     var minArtboardY = 0;
@@ -50,7 +51,7 @@ function bigArtboardBackground(){
 }
 
 function allArtboardBackgrounds(){
-
+    doc = app.activeDocument;
     var padding = 0;
 
     var bgLayer = createBackgroundLayer();
@@ -156,7 +157,7 @@ function renameArtboardsFromLayers(){
     if (app.documents.length == 0) {
         alert("No Open / Active Document Found");
     } else {
-        var doc = app.activeDocument;
+        doc = app.activeDocument;
         if (doc.artboards.length == doc.layers.length && doc.layers.length == doc.artboards.length) {
             for (var i = 0, l = doc.artboards.length; i < l; i++) {
                 var ab = doc.artboards[i];
@@ -173,7 +174,7 @@ function adjustArtboardName(pre, suff){
     if (app.documents.length == 0) {
         alert("No Open / Active Document Found");
     } else {
-        var doc = app.activeDocument;
+        doc = app.activeDocument;
         for (var i = 0, l = doc.artboards.length; i < l; i++) {
             var ab = doc.artboards[i];
             ab.name = pre + ab.name + suff;
@@ -184,7 +185,7 @@ function replaceArtboardName(find, repl){
     if (app.documents.length == 0) {
         alert("No Open / Active Document Found");
     } else {
-        var doc = app.activeDocument;
+        doc = app.activeDocument;
         for (var i = 0, l = doc.artboards.length; i < l; i++) {
             var ab = doc.artboards[i];
             var n = ab.name;

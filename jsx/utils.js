@@ -288,6 +288,18 @@ function exploreObject(objectToExplore){
     }
 }
 
+$.runScriptFromInput = function(options) {
+    runScriptFromInput(options);
+    dispatchCEPEvent("My Custom Event", 'runScriptFromInput');
+    return "complete";
+}
+
+function runScriptFromInput(str){
+    var script = bridgeTalkEncode(str);
+    var scriptDecoded = decodeURI(script);
+    eval(scriptDecoded);
+}
+
 
 function runScriptFromFile(file){
     var sf = file;
