@@ -22,8 +22,6 @@ function loadJSXFile(pPath) {
     }catch(e){
         alert('error '+e);
     }
-
-
 }
 
 function addMessage(str){
@@ -32,6 +30,7 @@ function addMessage(str){
 function appendMessage(str){
     // var m = $("#output").html();
     var m = 'Last Operation:';
+    var prev = $("#output").html();
     $("#output").html(m + "<br>" + str);
 }
 
@@ -52,12 +51,13 @@ function init() {
     });
 
     function addScripts(data){
+
         var folderFiles = data.folderFiles;
         var html = ''
-        //
 
         if(typeof(folderFiles) == "string"){
             folderFiles = JSON.parse(folderFiles);
+            // alert('folderfiles == string')
         }
         _.each(folderFiles, function(ff, i){
             html += '<button id="linkedScript-'+i+'" class="flex-item button linked-button" data-fileName="'+ff+'">'+ff.replace(/(\.js$|\.jsx$)/, '')+'</button>';
@@ -66,12 +66,22 @@ function init() {
 
         $('.linked-button').on('click', function(e){
             var fname = $(this).attr('data-fileName');
-
             csInterface.evalScript("$.runScriptFromFile("+$.stringify(fname)+")");
             return false;
         })
+        if(data.folderObjects){
+            $('#output').text('folderObjects');
+            var folderObjects = data.folderObjects;
+            if(typeof(folderObjects) == "string"){
+                $('#output').text(' -- '+folderObjects);
+                // folderObjects = JSON.parse(folderObjects);
+            }else {
+                // $('#output').text(JSON.stringify(folderObjects));
+                var fHtml = '';
+                // _.each(folderObjects, function(fo){});
+            }
+        }
     }
-
 
     themeManager.init();
 

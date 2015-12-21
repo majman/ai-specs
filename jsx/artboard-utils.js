@@ -170,29 +170,44 @@ function renameArtboardsFromLayers(){
     }
 }
 
-function adjustArtboardName(pre, suff){
+function adjustArtboardName(pre, suff, start, end){
     if (app.documents.length == 0) {
         alert("No Open / Active Document Found");
     } else {
         doc = app.activeDocument;
-        for (var i = 0, l = doc.artboards.length; i < l; i++) {
-            var ab = doc.artboards[i];
-            ab.name = pre + ab.name + suff;
+        var strt = Math.min(start ? start - 1 : 0, doc.artboards.length);
+        var l = Math.min(end || doc.artboards.length, doc.artboards.length);
+        var i = 0;
+        try {
+            for (i = strt; i < l; i++) {
+                var ab = doc.artboards[i];
+                ab.name = pre + ab.name + suff;
+            }
+        }catch(e){
+            alert(e);
         }
+        // bug fix, ab names panel doesn't refresh unless the 1st ab's name is touched
+        doc.artboards[0].name = doc.artboards[0].name;
     }
+    return true;
 }
-function replaceArtboardName(find, repl){
+function replaceArtboardName(find, repl, start, end){
     if (app.documents.length == 0) {
         alert("No Open / Active Document Found");
     } else {
         doc = app.activeDocument;
-        for (var i = 0, l = doc.artboards.length; i < l; i++) {
+        var strt = Math.min(start ? start - 1 : 0, doc.artboards.length);
+        var l = Math.min(end || doc.artboards.length, doc.artboards.length);
+        for (var i = strt; i < l; i++) {
             var ab = doc.artboards[i];
             var n = ab.name;
             n = n.replace( new RegExp(find,'g'), repl );
             ab.name = n;
         }
     }
+    // bug fix
+    doc.artboards[0].name = doc.artboards[0].name;
+    return true;
 }
 
 var renameDlg = {
@@ -217,25 +232,60 @@ var renameDlg = {
             'type': 'edittext',
             'label': 'replace',
             'defaults': ''
+        },
+        {
+            'type': 'edittext',
+            'label': 'artboard range',
+            'defaults': ''
         }
     ]
 }
 function onRenameDialog(){
-    // alert('onRenameDialog');
+    // alert(this._groups._artboard_range.getValue());
+    var abRange = this._groups._artboard_range.getValue();
+    var start, end;
+    if(abRange.length > 0){
+        abRange = abRange.replace(' ', '');
+        abRangeArray = abRange.split('-');
+        var abSplit = abRange.indexOf('-');
+        if(abSplit < 0){
+            start = end = Number(abRangeArray[0]);
+        }else if(abSplit == 0 && abRangeArray.length > 1){
+            start = 0;
+            end = Number(abRangeArray[1]);
+        }else if(abSplit == abRange.length - 1){
+            start = Number(abRangeArray[0]);
+        }else {
+            start = Number(abRangeArray[0]);
+            end = Number(abRangeArray[1]);
+        }
+
+
+        // if(abRange.indexOf('-') >= 0){
+        //     if(abRange.indexOf('-') == 0){
+        //         sta
+        //     }
+        // }
+    }
+    // alert(start + ' : '+end);
+
+
     try {
         var pre = this._groups._prefix.getValue();
         var suf = this._groups._suffix.getValue();
-        adjustArtboardName(pre, suf);
+        if(pre.length > 0 || suf.length > 0){
+            adjustArtboardName(pre, suf, start, end);
+        }
 
         var find = this._groups._find.getValue();
         var repl = this._groups._replace.getValue();
-        replaceArtboardName(find, repl);
+        if(find.length > 0){
+            replaceArtboardName(find, repl, start, end);
+        }
         return true;
     }catch(e){
         alert(e);
     }
-
-
 }
 
 function editArtboardNames(){

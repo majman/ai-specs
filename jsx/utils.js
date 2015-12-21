@@ -136,8 +136,9 @@ function showDialogue(opts, onOK){
     _.each(opts.groups, function(gr){
         var t = gr.title || undefined;
         if(gr.type == 'edittext'){
+            var etName = gr.label.replace(' ', '_');
             var et = new EditTextWithLabel(win, gr.label, gr['default']);
-            win._groups['_'+gr.label] = et;
+            win._groups['_'+etName] = et;
         }
     });
 
@@ -171,6 +172,21 @@ EditTextWithLabel.prototype = {
     }
 }
 
+function createSelectionPanel(name, array, parent) {
+    var panel = parent.add("panel", undefined, name);
+    panel.alignChildren = "left";
+    for(var i = 0; i < array.length;  i++) {
+        var cb = panel.add("checkbox", undefined, "\u00A0" + array[i].name);
+        cb.item = array[i];
+        cb.onClick = function() {
+            if(this.value) {
+                // selectedExportOptions[this.item.name] = this.item;
+            } else {
+                // delete selectedExportOptions[this.item.name];
+            }
+        };
+    }
+};
 
 
 

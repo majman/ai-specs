@@ -1,2 +1,0 @@
-// var csInterface = new CSInterface();
-

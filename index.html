@@ -9,6 +9,8 @@
 <body>
     <div id="content" class="content">
         <div id="main" class="main">
+
+            <!-- Misc Specs / Artboard Helpers -->
             <div>
                 <input type="checkbox" id="dimensions-artboards" class="toggle-input dimensions-artboards" checked="checked">
                 <label class="section-header toggle" for="dimensions-artboards">Dimensions / Artboards</label>
@@ -31,7 +33,6 @@
                             </div>
                         </div>
                         <div class="section">
-
                             <div class="section-header">Edge Distance:</div>
                             <div class="button-group icon-button-group columns">
                                 <button id="specDistFromLeft" class="specDistFromLeft button icon-button flex-item"><span class="button-text">from left</span></button>
@@ -60,6 +61,7 @@
                 </div>
             </div>
 
+            <!-- Misc Text / Variables -->
             <div>
                 <input type="checkbox" id="units-misc" class="toggle-input units-misc" checked="checked">
                 <label class="section-header toggle" for="units-misc">Units / Text</label>
@@ -165,6 +167,7 @@
                 </div>
             </div>
 
+            <!-- Live Input -->
             <div>
                 <input type="checkbox" id="show-live-input" class="toggle-input show-live-input" checked="checked">
                 <label class="section-header toggle" for="show-live-input">Live Input</label>
@@ -174,16 +177,14 @@
                 </div>
             </div>
 
-            <div>
+            <!-- Linked Scripts -->
+            <div class="section-container">
                 <input type="checkbox" id="show-scripts" class="toggle-input show-scripts" checked="checked">
                 <label class="section-header toggle" for="show-scripts">Linked Scripts</label>
                 <div class="section toggle-content">
-                    <div id="linked-scripts" class="button-group flex-no-wrap flex-column linked-scripts toggle-content">
-                    </div>
+                    <div id="linked-scripts" class="button-group flex-no-wrap flex-column linked-scripts toggle-content"></div>
                 </div>
             </div>
-
-
 
             <div id="output" class="output-panel "></div>
         </div>

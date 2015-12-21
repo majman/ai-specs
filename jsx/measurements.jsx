@@ -993,34 +993,53 @@ $.addRemoteItems = function(data) {
 
 
 var scriptFolderPath = '~/Dropbox/SharedAdobeScripts';
-
+var folderFiles = [];
+var folderObjects = {};
 var listData = listScripts();
 dispatchCEPEvent("My Custom Event", listData);
 
 function listScripts(){
     var ob = {type: 'listScripts'};
     var str = '';
-    var folderFiles = [];
+
     if(scriptFolderPath != null){
-        // scriptFolder = Folder(scriptFolder.fsName.replace('file://', "")); // is this still happening on Macs?
+
         var scriptFolder = Folder(scriptFolderPath);
         if(scriptFolder.exists){
             str = decodeURI(scriptFolder);
-            var tempFolderFiles = scriptFolder.getFiles(function(f){
-
-                return f instanceof Folder || f instanceof File && f.name.match(/(\.js$|\.jsx$)/);
-            });
-            _.each(tempFolderFiles, function(ff){
-                // str += ' '+ff.name;
-                if(ff instanceof File == true){
-                    var n = decodeURI(ff.name);
-                    folderFiles.push(n);
-                }
-            });
+            addScriptFiles(scriptFolder);
         }
     }
     ob.str = str;
     ob.folderFiles = folderFiles;
+    ob.folderObjects = folderObjects;
+    // alert(_.size(folderObjects.SharedAdobeScripts));
     ob = JSON.stringify(ob);
     return ob;
+}
+
+function addScriptFiles(scriptFolder, parent){
+    var parent = parent || folderObjects;
+
+    if(parent[scriptFolder.name] == undefined){
+        parent[scriptFolder.name] = {
+            'files': [],
+            'folders': {}
+        }
+    }
+    var sf = parent[scriptFolder.name];
+    var tempFolderFiles = scriptFolder.getFiles(function(f){
+        return f instanceof Folder || (f instanceof File && f.name.match(/(\.js$|\.jsx$)/));
+    });
+    _.each(tempFolderFiles, function(ff){
+
+        if(ff instanceof File == true){
+            var n = decodeURI(ff.name);
+            sf.files.push(n);
+            folderFiles.push(n);
+        }else {
+           var childFolder = Folder(ff);
+           addScriptFiles(childFolder, sf.folders);
+        }
+   });
 }

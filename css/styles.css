@@ -19,7 +19,7 @@ body {
     border: none;
     text-transform: capitalize;
     -webkit-font-smoothing: antialiased;
-    -webkit-user-select: none;
+    /*-webkit-user-select: none;*/
 }
 a {
     text-decoration: none;
@@ -101,7 +101,7 @@ a {
     padding: 0 8px;
     height: 24px;
     line-height: 24px;
-    -webkit-border-radius: 2px;
+    border-radius: 2px;
     border: none;
     vertical-align: top;
     box-shadow: 0 0 0 1px rgba(0,0,0,.5) inset,
@@ -112,6 +112,21 @@ a {
 }
 .columns .button {
     -webkit-flex: 1 0 auto;
+}
+.linked-button {
+    margin: 0;
+    background: transparent;
+    box-shadow: 0 1px rgba(0,0,0,.5) inset;
+    cursor: pointer;
+    text-align: left;
+    text-transform: none;
+}
+.linked-button:hover {
+    background: transparent;
+    box-shadow: 0 1px rgba(0,0,0,.5) inset;
+}
+.linked-scripts {
+    box-shadow: 0 0 0 1px rgba(0,0,0,.5) inset;
 }
 
 
@@ -498,3 +513,4 @@ option, optgroup {
 .ace_text-input {
     z-index: 5000;
 }
+
