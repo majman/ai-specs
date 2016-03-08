@@ -236,11 +236,30 @@ function init() {
 
     $('#run-input').on('click', function(){
         // var scr = $('#live-input').val();
-        var scr = editor.getValue();
+
         // alert(scr)
-        csInterface.evalScript("$.runScriptFromInput("+$.stringify(scr)+")");
+        try {
+            var scr = editor.getValue();
+            csInterface.evalScript("$.runScriptFromInput("+$.stringify(scr)+")");
+        } catch (e){
+            alert('error ');
+        }
     });
 
+    var watchTestIndex = 0;
+    function watchTest(){
+        csInterface.evalScript("$.runWatchTest()");
+        watchTestIndex++;
+        if(watchTestIndex < 10){
+            $('#output2').text(watchTestIndex);
+            setTimeout(function(){
+                watchTest()
+            }, 1000);
+        }else {
+            $('#output2').text('done');
+        }
+    }
+    // watchTest();
 
 
     // remote assets

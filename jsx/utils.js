@@ -305,10 +305,51 @@ function exploreObject(objectToExplore){
 }
 
 $.runScriptFromInput = function(options) {
-    runScriptFromInput(options);
-    dispatchCEPEvent("My Custom Event", 'runScriptFromInput');
+    try {
+        runScriptFromInput(options);
+        testObject.a ++;
+        dispatchCEPEvent("My Custom Event", 'runScriptFromInput');
+    }catch (e){
+        alert(e);
+    }
+
     return "complete";
 }
+
+// test object watching
+var testObject = {
+    'selection': null
+}
+var watchSelection = function(prop, oldval, newval) {
+    if(oldval != null){
+        try {
+            alert(prop +' changed; was: '+oldval +', now: '+newval);
+        }catch(e){
+            alert(e);
+        }
+    }
+}
+for (var key in testObject) {
+    if(key == 'selection'){
+        try {
+            testObject.watch(key, watchSelection);
+        }catch(e){
+            alert(e);
+        }
+    }
+}
+function checkSelection(){
+    var a = app.activeDocument.selection;
+    var b = testObject.selection;
+    if(!_.isEqual(a, b)){
+        testObject.selection = app.activeDocument.selection;
+    }
+}
+$.runWatchTest = function(options) {
+    checkSelection();
+    return "complete";
+}
+
 
 function runScriptFromInput(str){
     var script = bridgeTalkEncode(str);
@@ -434,5 +475,9 @@ var addRemoteItems = function(data) {
     }catch(e){
         alert(e);
     }
-
 }
+
+
+
+
+

@@ -979,8 +979,11 @@ $.testFunction = function(options) {
     return "complete";
 }
 
+
+
 $.runScriptFromFile = function(options) {
     // alert('runScriptFromFile '+options);
+
     runScriptFromFile(scriptFolderPath+'/'+options);
     dispatchCEPEvent("My Custom Event", 'runScriptFromFile');
     return "complete";
@@ -1043,3 +1046,5 @@ function addScriptFiles(scriptFolder, parent){
         }
    });
 }
+
+
