@@ -298,6 +298,8 @@ function init() {
                 while (i--)
                     binaryString[i] = String.fromCharCode(uInt8Array[i]);
                 var imgData = binaryString.join('');
+
+                $('#output2').append(imgData.naturalWidth);
                 var base64 = window.btoa(imgData);
 
                 var downloadedFile = createTempFolder() + name + '.jpg';
@@ -305,10 +307,15 @@ function init() {
                 window.cep.fs.writeFile(downloadedFile, base64, cep.encoding.Base64);
 
                 var data = {
-                    'path': downloadedFile,
-                    'songname': song.name,
-                    'artistname': song.artist.name,
-                    'albumname': song.album.name
+                    'path': downloadedFile
+                }
+                if(song){
+                    data = {
+                        'path': downloadedFile,
+                        'songname': song.name,
+                        'artistname': song.artist.name,
+                        'albumname': song.album.name
+                    }
                 }
                 var stringified = $.stringify(data);
                 // alert('downloadAndOpenInIllustrator '+ data.songName);
@@ -323,11 +330,75 @@ function init() {
         downloadAndOpenInIllustrator(url, n, song);
     };
 
+    function addImageToPlaceholder(url){
+        var n = cleanFileName(url);
+        downloadAndOpenInIllustrator(url, n);
+    }
+
+    var keys = {
+        'flickr' : {
+            'api_key': 'e54c45ed6c52a5f6871bf8b4dd959902'
+        }
+    }
+
+    // var flickr = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=e54c45ed6c52a5f6871bf8b4dd959902&tags=kitten&per_page=10&format=json&auth_token=72157664924612309-abde365098dc3117&api_sig=b883ae77f9784c2a1313d8b7a32e0635'
+
     var IMAGE_SERVER =  'http://direct.rhapsody.com/imageserver/images/';
     // 'image200': constants.IMAGE_SERVER + id + '/200x200.jpeg',
     // 'image300': constants.IMAGE_SERVER + id + '/300x300.jpeg',
     // 'image600': constants.IMAGE_SERVER + id + '/600x600.jpeg',
 
+    var flickrURL = 'https://api.flickr.com/services/rest/?method=flickr.photos.search';
+
+    function searchFlickr(tags){
+        // var scr = '\
+        //     alert(selection.length); \
+        // ';
+        // csInterface.evalScript("$.runScriptFromInput("+$.stringify(scr)+")");
+        csInterface.evalScript("app.activeDocument.selection.length;", function(selectionLength){
+            if(selectionLength){
+                $('#output2').append('search flickr<br>');
+                // { "id": "24983615034", "owner": "129702353@N08", "secret": "c2a4376a66", "server": "1630", "farm": 2, "title": "Cat", "ispublic": 1, "isfriend": 0, "isfamily": 0 },
+                // https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+
+                var data = {
+                    'api_key': keys.flickr.api_key,
+                    'format': 'json',
+                    'tags': tags || 'kitten',
+                    'sort': 'interestingness-desc',
+                    'per_page': selectionLength,
+                    'page': Math.random() * 5 >> 0,
+                    'nojsoncallback': 1,
+                    'content_type': 1,
+                    'media': 'photos',
+                    'orientation':'square'
+                }
+                var request = {
+                    'url': flickrURL,
+                    'data': data,
+                    'dataType': "json",
+                    'success': function(response){
+
+                        var count = response.photos.photo.length;
+                        var html = '';
+                        _.each(response.photos.photo, function(photo){
+                            var src = 'https://farm'+photo.farm+'.staticflickr.com/'+photo.server+'/'+photo.id+'_'+photo.secret+'.jpg'
+                            addImageToPlaceholder(src);
+                            html += '<img src="'+src+'" width="100"/>';
+                        });
+                        // $('#output2').append('<code>got response: <br>' + html);
+                    },
+                    'error': function(response){
+                        $('#output2').append('<code>error: <br>' + JSON.stringify(response));
+                    }
+                }
+                $.ajax(request);
+
+            }
+        });
+
+
+    }
     var searchRhapsody = function(user, count, size, offset) {
         var url = 'http://napi-gateway-stage.rhapsody.com/v1/members/'+user+'/favorites?apikey=2a0n4Uj1CAmMpGa5GyRqym7Hjm7bLMji&limit='+count+'&offset='+offset;
 
@@ -341,7 +412,13 @@ function init() {
         });
     };
 
-
+    $('#flickr-search-btn').on('click', function(){
+        var tags = $.trim($('#flickr-tags').val());
+        if(tags.length == 0){
+            tags = 'kittens';
+        }
+        searchFlickr(tags);
+    })
 
     $('#get-remote').on('click', function(){
 
@@ -398,66 +475,6 @@ jQuery.extend({
         }
     }
 });
-
-var rhapUsers = [
-
-    {
-        'userGuid': 'A15830BF51EC0152E0430A9603320152',
-        'nick': 'Marshall J'
-    },
-    {
-        'userGuid': 'FBD985D9E38490A1E040960A39030E95',
-        'nick': 'Jason C'
-    },
-    {
-        'userGuid': '2496EA7CD48590BAE043C0A87FE490BA',
-        'nick': 'Dan K'
-    },
-    {
-        'userGuid': 'FBDB6A665BC671E7E040960A39030B45',
-        'nick': 'Kyle K'
-    },
-    {
-        'userGuid': 'E7735EE6C8DF5026E033C0A87F165026',
-        'nick': 'Brian R'
-    },
-    {
-        'userGuid': '0EFB12C4992B50A0E043C0A87FE450A0',
-        'nick': 'Ken M'
-    },
-    {
-        'userGuid': '36CA3759E2E3603CE043C0A87FE4603C',
-        'nick': 'Daniel S'
-    },
-    {
-        'userGuid': '035AFC9135191B11E050960A38034B3C',
-        'nick': 'Keenan P'
-    },
-    {
-        'userGuid': '05E57F6DC9F080DAE043C0A87FE480DA',
-        'nick': 'Peter H'
-    },
-    {
-        'userGuid': 'E7735EE796E35026E033C0A87F165026',
-        'nick': 'Paul R'
-    },
-    {
-        'userGuid': 'FFBF69CCBC5FD00CE033C0A87F15D00C',
-        'nick': 'Kim L'
-    },
-    {
-        'userGuid': 'C13D86BA0E5FDFDDE040960A38033AC1',
-        'nick': 'Paul S'
-    },
-    {
-        'userGuid': '0B75CEFAFC5640BCE043C0A87FE440BC',
-        'nick': 'David H'
-    },
-    {
-        'userGuid': "13C759546163F5FFE050960A38035F10",
-        'nick': 'Nick S'
-    }
-];
 
 var editor = ace.edit("editor");
     editor.setTheme("ace/theme/textmate");

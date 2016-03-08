@@ -430,7 +430,7 @@ function stringify(obj) {
 
 var dupCount = 0;
 
-var addRemoteItems = function(data) {
+var addRemoteItemsRhap = function(data) {
     var gi = app.activeDocument.groupItems.getByName('_songitem');
     var h = gi.height;
     try {
@@ -472,6 +472,34 @@ var addRemoteItems = function(data) {
             dupCount ++;
 
         // }
+    }catch(e){
+        alert(e);
+    }
+}
+
+
+var addRemoteItems = function(data) {
+    try {
+        var sel = app.activeDocument.selection;
+        var placeholder = sel.pop();
+        var placedItem = activeDocument.activeLayer.placedItems.add();
+        placedItem.file = new File(data.path);
+        var w = placedItem.width;
+        var h = placedItem.height;
+        var r = 1;
+        if(w > h){
+            placedItem.height = placeholder.height;
+            placedItem.width = w * placeholder.height/h;
+        }else {
+            placedItem.width = placeholder.width;
+            placedItem.height = h * placeholder.width/w;
+        }
+        // placedItem.width = placeholder.width;
+        // placedItem.height = placeholder.height;
+        placedItem.top = placeholder.top;
+        placedItem.left = placeholder.left;
+        placedItem.embed();
+        app.activeDocument.selection = sel;
     }catch(e){
         alert(e);
     }

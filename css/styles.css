@@ -344,7 +344,15 @@ input[type='range']::-webkit-slider-thumb{
 }
 
 .button-with-options {
-
+    display: flex;
+}
+.button-with-options > input{
+    flex: 1 0 auto;
+    height: 24px;
+    margin: 0 5px 0 0;
+}
+.button-with-options > button{
+    flex: 0 0 auto !important;
 }
 .button-options {
     display: flex;
